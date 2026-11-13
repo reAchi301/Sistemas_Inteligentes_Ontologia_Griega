@@ -1,0 +1,206 @@
+; Fri Nov 13 22:40:39 EET 2026
+; 
+;+ (version "3.4.8")
+;+ (build "Build 629")
+
+([AlasDedalo] of  Magico
+
+	(otorgaCapacidad [Vuelo])
+	(poseidoPor [Dedalo]))
+
+([Andromeda] of  Mortal
+
+	(estadoLibre FALSE)
+	(estadoVivo TRUE)
+	(presoDe [Ceto])
+	(ubicadoEn [CostaEtiopia]))
+
+([Ariadna] of  Mortal
+)
+
+([Atenea] of  Dios
+)
+
+([CabezaMedusa] of  Trofeo
+)
+
+([CascoHades] of  Magico
+)
+
+([Casiopea] of  Mortal
+)
+
+([Cefeo] of  Mortal
+)
+
+([Ceto] of  Criatura
+
+	(estadoLibre TRUE)
+	(tienePreso [Andromeda])
+	(ubicadoEn [CostaEtiopia]))
+
+([CostaEtiopia] of  Lugar
+
+	(contieneA
+		[Ceto]
+		[Andromeda]))
+
+([CuernoMinotauro] of  Arma
+
+	(poseidoPor [Minotauro]))
+
+([Dedalo] of  Mortal
+
+	(estadoVivo TRUE)
+	(poseeObjeto [AlasDedalo])
+	(presoDe [Minos])
+	(ubicadoEn [LaberintoCreta]))
+
+([Doris] of  SerDivino
+)
+
+([EscudoBronce] of  Proteccion
+)
+
+([EscudoEspejo] of  Proteccion
+)
+
+([EspadaIndestructible] of  Arma
+)
+
+([EspadaTeseo] of  Arma
+
+	(poseidoPor [Teseo]))
+
+([Grayas] of  SerDivino
+)
+
+([Hades] of  Dios
+)
+
+([Hefesto] of  Dios
+)
+
+([Heracles] of  Heroe
+)
+
+([Hermes] of  Dios
+)
+
+([HiloAriadna] of  Magico
+
+	(otorgaCapacidad [Orientacion])
+	(poseidoPor [Teseo])
+	(ubicadoEn [LaberintoCreta]))
+
+([HozAcero] of  Arma
+)
+
+([Icaro] of  Mortal
+)
+
+([Invisibilidad] of  Capacidad
+)
+
+([Kraken] of  Criatura
+)
+
+([LaberintoCreta] of  Lugar
+
+	(contieneA
+		[HiloAriadna]
+		[Teseo]
+		[Minotauro]
+		[Dedalo]
+		[Minos]))
+
+([MatarMinotauro] of  Accion
+
+	(afectaA [Minotauro])
+	(ocurreEn [LaberintoCreta])
+	(realizadaPor [Teseo])
+	(usaObjeto [EspadaTeseo]))
+
+([Medusa] of  Criatura
+)
+
+([Minos] of  Mortal
+
+	(estadoLibre TRUE)
+	(estadoVivo TRUE)
+	(tienePreso [Dedalo])
+	(ubicadoEn [LaberintoCreta]))
+
+([Minotauro] of  Criatura
+
+	(estadoVivo FALSE)
+	(poseeObjeto [CuernoMinotauro])
+	(ubicadoEn [LaberintoCreta]))
+
+([mitologia_Class11] of  %3APAL-CONSTRAINT
+
+	(%3APAL-DESCRIPTION "Ningún personaje puede ser preso de sí mismo")
+	(%3APAL-NAME "NoPresoDeSiMismo")
+	(%3APAL-RANGE "(defrange ?p :FRAME Personaje)")
+	(%3APAL-STATEMENT "(forall ?p (not (presoDe ?p ?p)))"))
+
+([mitologia_Class13] of  %3APAL-CONSTRAINT
+
+	(%3APAL-DESCRIPTION "Un personaje preso está en el mismo lugar que su captor")
+	(%3APAL-NAME "CautivoMismoLugar")
+	(%3APAL-RANGE "(defrange ?p :FRAME Personaje)\n(defrange ?q :FRAME Personaje)\n(defrange ?l :FRAME Lugar)")
+	(%3APAL-STATEMENT "(forall ?p (forall ?q (forall ?l\n                              (=> (and (presoDe ?p ?q) (ubicadoEn ?q ?l))\n                                  (ubicadoEn ?p ?l)))))"))
+
+([mitologia_Class14] of  %3APAL-CONSTRAINT
+
+	(%3APAL-DESCRIPTION "Quien realiza una acción solo puede usar objetos que posee")
+	(%3APAL-NAME "AccionConObjetoPropio")
+	(%3APAL-RANGE "(defrange ?a :FRAME Accion)\n(defrange ?p :FRAME Personaje)\n(defrange ?o :FRAME Objeto)")
+	(%3APAL-STATEMENT "(forall ?a (forall ?p (forall ?o\n                              (=> (and (realizadaPor ?a ?p) (usaObjeto ?a ?o))\n                                  (poseeObjeto ?p ?o)))))"))
+
+([Nereidas] of  SerDivino
+)
+
+([Ninfas] of  SerDivino
+)
+
+([Olimpo] of  Lugar
+)
+
+([Orientacion] of  Capacidad
+)
+
+([Pasifae] of  Mortal
+
+	(estadoVivo TRUE))
+
+([Pegaso] of  Criatura
+)
+
+([Perseo] of  Heroe
+)
+
+([Poseidon] of  Dios
+)
+
+([SandaliasAladas] of  Magico
+)
+
+([Teseo] of  Heroe
+
+	(estadoLibre TRUE)
+	(estadoVivo TRUE)
+	(poseeObjeto
+		[HiloAriadna]
+		[EspadaTeseo])
+	(tieneCapacidad [Orientacion])
+	(ubicadoEn [LaberintoCreta]))
+
+([Vuelo] of  Capacidad
+)
+
+([Zeus] of  Dios
+)
+
+([ZurronMagico] of  Magico
+)
