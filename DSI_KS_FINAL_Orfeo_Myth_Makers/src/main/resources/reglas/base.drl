@@ -1,0 +1,322 @@
+// =====================================================================
+// base.drl  -  Conocimiento por defecto y reglas COMUNES a todos los mitos
+// (todo el equipo usa este fichero; cada escenario anade su propio .drl)
+// =====================================================================
+package reglas
+
+import mitologia.modelo.*
+
+// ---------------------------------------------------------------------
+// Consultas que usa Main para escribir la respuesta (no infieren nada)
+// ---------------------------------------------------------------------
+query "sucesos"
+    $s : Suceso()
+end
+
+query "respuesta"
+    $r : Respuesta()
+end
+
+// =====================================================================
+// AGENDA "inicial": conocimiento por defecto + condiciones del escenario
+// =====================================================================
+
+rule "Conocimiento inicial por defecto"
+    agenda-group "inicial"
+    salience 100
+    when
+    then
+        // ---- Dioses ----
+        insert(new Dios("Zeus"));
+        insert(new Dios("Atenea"));
+        insert(new Dios("Hermes"));
+        insert(new Dios("Hades"));
+        insert(new Dios("Hefesto"));
+        insert(new Dios("Poseidon"));
+        // ---- Seres divinos (dioses menores) ----
+        insert(new SerDivino("Grayas"));
+        insert(new SerDivino("Ninfas"));
+        insert(new SerDivino("Nereidas"));
+        insert(new SerDivino("Doris"));
+        // ---- Heroes ----
+        insert(new Heroe("Perseo"));
+        insert(new Heroe("Teseo"));
+        insert(new Heroe("Heracles"));
+        // ---- Mortales ----
+        insert(new Mortal("Andromeda"));
+        insert(new Mortal("Casiopea"));
+        insert(new Mortal("Cefeo"));
+        insert(new Mortal("Minos"));
+        insert(new Mortal("Ariadna"));
+        insert(new Mortal("Dedalo"));
+        insert(new Mortal("Icaro"));
+        // ---- Criaturas ----
+        Criatura ceto = new Criatura("Ceto");
+        ceto.setLibre(false);                       // Ceto empieza encerrada por Poseidon
+        insert(ceto);
+        insert(new Criatura("Kraken"));
+        insert(new Criatura("Medusa"));
+        insert(new Criatura("Minotauro"));
+
+        // ---- Objetos ----
+        insert(new Arma("HozAcero"));
+        insert(new Arma("EspadaIndestructible"));
+        insert(new Arma("EspadaTeseo"));
+        insert(new Arma("CuernoMinotauro"));
+        insert(new Proteccion("EscudoBronce"));
+        insert(new Proteccion("EscudoEspejo"));
+        insert(new Proteccion("EspejoMano"));
+        insert(new Magico("CascoHades"));
+        insert(new Magico("SandaliasAladas"));
+        insert(new Magico("ZurronMagico"));
+        insert(new Magico("HiloAriadna"));
+        insert(new Magico("BridaOro"));
+        insert(new Magico("AnilloInvisibilidad"));
+        insert(new Magico("ConjuroVuelo"));
+        insert(new Objeto("OjoGrayas"));
+        insert(new Trofeo("CabezaMedusa"));
+
+        // ---- Capacidades ----
+        insert(new Capacidad("Vuelo"));
+        insert(new Capacidad("Invisibilidad"));
+        insert(new Capacidad("Espejo"));
+        insert(new Capacidad("Petrificar"));
+        insert(new Capacidad("Orientacion"));
+
+        // ---- Que capacidad da cada objeto (slot otorgaCapacidad) ----
+        insert(new Otorga("SandaliasAladas", "Vuelo"));
+        insert(new Otorga("ConjuroVuelo", "Vuelo"));
+        insert(new Otorga("CascoHades", "Invisibilidad"));
+        insert(new Otorga("AnilloInvisibilidad", "Invisibilidad"));
+        insert(new Otorga("EscudoEspejo", "Espejo"));
+        insert(new Otorga("EspejoMano", "Espejo"));
+        insert(new Otorga("CabezaMedusa", "Petrificar"));
+        insert(new Otorga("HiloAriadna", "Orientacion"));
+
+        // ---- Quien tiene cada objeto al empezar (slot poseeObjeto) ----
+        insert(new Posee("Atenea", "EscudoBronce"));
+        insert(new Posee("Hermes", "HozAcero"));
+        insert(new Posee("Hades", "CascoHades"));
+        insert(new Posee("Hefesto", "BridaOro"));
+        insert(new Posee("Ninfas", "SandaliasAladas"));
+        insert(new Posee("Ninfas", "ZurronMagico"));
+        insert(new Posee("Grayas", "OjoGrayas"));
+        insert(new Posee("Medusa", "CabezaMedusa"));
+        insert(new Posee("Minotauro", "CuernoMinotauro"));
+        insert(new Posee("Ariadna", "HiloAriadna"));
+
+        // ---- Relaciones iniciales ----
+        insert(new PresoDe("Ceto", "Poseidon"));      // Poseidon tiene encerrada a Ceto
+        insert(new TieneFavor("Ceto", "Poseidon"));   // Ceto sirve a Poseidon
+        insert(new HijoDe("Andromeda", "Casiopea"));
+        insert(new HijoDe("Andromeda", "Cefeo"));
+        insert(new HijoDe("Perseo", "Zeus"));
+        insert(new HijoDe("Heracles", "Zeus"));
+end
+
+// Una condicion "X no tiene O" del escenario quita el hecho por defecto
+rule "Aplicar condicion: X no tiene O"
+    agenda-group "inicial"
+    salience 90
+    when
+        NoPosee($p : poseedor, $o : objeto)
+        $f : Posee(poseedor == $p, objeto == $o)
+    then
+        delete($f);
+end
+
+// Un objeto que el escenario da a alguien deja de tenerlo su dueno por defecto
+rule "Aplicar condicion: X tiene O (quitar dueno anterior)"
+    agenda-group "inicial"
+    salience 80
+    when
+        Posee($nuevo : poseedor, $o : objeto)
+        $viejo : Posee(poseedor != $nuevo, objeto == $o)
+        not NoPosee(poseedor == $nuevo, objeto == $o)
+        // solo si la posesion nueva viene del escenario: el dueno por defecto
+        // siempre es un dios, ser divino o criatura, nunca un heroe/mortal
+        Personaje(nombre == $nuevo, this instanceof Heroe || this instanceof Mortal)
+    then
+        delete($viejo);
+end
+
+// ---- Mostrar el estado inicial (pedido en la seccion 10 del enunciado) ----
+rule "Mostrar personajes"
+    agenda-group "inicial"
+    salience -10
+    when
+        $p : Personaje()
+    then
+        System.out.println($p.getNombre() + " (" + $p.getClass().getSimpleName() + ") presente y "
+            + ($p.isVivo() ? "vivo" : "muerto") + " y " + ($p.isLibre() ? "libre" : "preso"));
+end
+
+rule "Mostrar posesiones"
+    agenda-group "inicial"
+    salience -20
+    when
+        Posee($p : poseedor, $o : objeto)
+    then
+        System.out.println($o + " esta en posesion de " + $p);
+end
+
+rule "Mostrar condiciones del escenario"
+    agenda-group "inicial"
+    salience -30
+    when
+        $f : Object(this instanceof TieneFavor || this instanceof TieneEnojo || this instanceof TieneCapacidad)
+    then
+        System.out.println("Condicion: " + $f);
+end
+
+// =====================================================================
+// AGENDA "mitos": reglas GENERICAS que sirven para cualquier mito
+// =====================================================================
+
+// Un dios libera a la criatura que tiene encerrada si alguien le enoja
+rule "Dios libera criatura por enojo"
+    agenda-group "mitos"
+    when
+        TieneEnojo($x : personaje, $d : dios)
+        $c : Criatura($nc : nombre, vivo == true, libre == false)
+        $pd : PresoDe(preso == $nc, captor == $d)
+    then
+        delete($pd);
+        modify($c) { setLibre(true) };
+        insert(new Suceso($nc + " queda libre debido al enojo de " + $d + " hacia " + $x));
+end
+
+// La criatura liberada (que sirve al dios) apresa al hijo de quien enojo al dios
+rule "Criatura apresa al hijo de quien enojo a su dios"
+    agenda-group "mitos"
+    when
+        TieneEnojo($x : personaje, $d : dios)
+        HijoDe($h : hijo, progenitor == $x)
+        $c : Criatura($nc : nombre, vivo == true, libre == true)
+        TieneFavor(personaje == $nc, dios == $d)
+        $v : Personaje(nombre == $h, vivo == true, libre == true)
+        not PresoDe(preso == $h)
+    then
+        modify($v) { setLibre(false) };
+        insert(new PresoDe($h, $nc));
+        insert(new Suceso($h + " queda presa de " + $nc + " debido a estar " + $nc + " libre (castigo de "
+            + $d + " a " + $x + ")"));
+end
+
+// Un dios entrega lo que posee al heroe que tiene su favor
+rule "Dios entrega objeto a quien tiene su favor"
+    agenda-group "mitos"
+    when
+        $h : Heroe($nh : nombre, vivo == true)
+        TieneFavor(personaje == $nh, $d : dios)
+        Dios(nombre == $d)
+        $p : Posee(poseedor == $d, $o : objeto)
+    then
+        delete($p);
+        insert(new Posee($nh, $o));
+        insert(new Suceso($nh + " obtiene " + $o + " debido a tener el favor de " + $d));
+end
+
+// Tener un objeto da la capacidad que ese objeto otorga
+rule "Objeto otorga capacidad"
+    agenda-group "mitos"
+    when
+        $p : Personaje($np : nombre, vivo == true, this instanceof Heroe || this instanceof Mortal)
+        Posee(poseedor == $np, $o : objeto)
+        Otorga(objeto == $o, $c : capacidad)
+        not TieneCapacidad(personaje == $np, capacidad == $c)
+    then
+        insert(new TieneCapacidad($np, $c));
+        insert(new Suceso($np + " obtiene la capacidad " + $c + " debido a tener " + $o));
+end
+
+// Quien mata a alguien se queda con sus posesiones
+rule "El que mata se queda con las posesiones de la victima"
+    agenda-group "mitos"
+    when
+        Mata($x : asesino, $y : victima)
+        $p : Posee(poseedor == $y, $o : objeto)
+    then
+        delete($p);
+        insert(new Posee($x, $o));
+        insert(new Suceso($x + " obtiene " + $o + " debido a matar a " + $y));
+end
+
+// Si muere el captor, su preso queda libre
+rule "Matar al captor libera al preso"
+    agenda-group "mitos"
+    when
+        Mata($x : asesino, $y : victima)
+        $pd : PresoDe($z : preso, captor == $y)
+        $v : Personaje(nombre == $z)
+    then
+        delete($pd);
+        modify($v) { setLibre(true) };
+        insert(new Libera($x, $z));
+        insert(new Suceso($x + " libera a " + $z + " debido a matar a " + $y));
+end
+
+// =====================================================================
+// AGENDA "respuesta": comprobar si se cumple la Mision del escenario
+// =====================================================================
+
+rule "Mision liberar cumplida"
+    agenda-group "respuesta"
+    when
+        Mision(accion == "liberar", $s : sujeto, $o : objetivo)
+        Libera(liberador == $s, liberado == $o)
+        not Respuesta()
+    then
+        insert(new Respuesta(true, "Si, " + $s + " puede liberar a " + $o + " debido a que:"));
+end
+
+rule "Mision matar cumplida"
+    agenda-group "respuesta"
+    when
+        Mision(accion == "matar", $s : sujeto, $o : objetivo)
+        Mata(asesino == $s, victima == $o)
+        not Respuesta()
+    then
+        insert(new Respuesta(true, "Si, " + $s + " puede matar a " + $o + " debido a que:"));
+end
+
+rule "Mision apresar cumplida"
+    agenda-group "respuesta"
+    when
+        Mision(accion == "apresar", $s : sujeto, $o : objetivo)
+        PresoDe(preso == $o, captor == $s)
+        not Respuesta()
+    then
+        insert(new Respuesta(true, "Si, " + $s + " puede apresar a " + $o + " debido a que:"));
+end
+
+rule "Mision obtener cumplida"
+    agenda-group "respuesta"
+    when
+        Mision(accion == "obtener", $s : sujeto, $o : objetivo)
+        Posee(poseedor == $s, objeto == $o)
+        not Respuesta()
+    then
+        insert(new Respuesta(true, "Si, " + $s + " puede obtener " + $o + " debido a que:"));
+end
+
+rule "Mision capacidad cumplida"
+    agenda-group "respuesta"
+    when
+        Mision(accion == "capacidad", $s : sujeto, $o : objetivo)
+        TieneCapacidad(personaje == $s, capacidad == $o)
+        not Respuesta()
+    then
+        insert(new Respuesta(true, "Si, " + $s + " puede tener la capacidad " + $o + " debido a que:"));
+end
+
+rule "Mision no cumplida"
+    agenda-group "respuesta"
+    salience -100
+    when
+        Mision($a : accion, $s : sujeto, $o : objetivo)
+        not Respuesta()
+    then
+        insert(new Respuesta(false, "No, " + $s + " no puede " + $a + " " + $o
+            + ". Esto es lo que si llego a ocurrir:"));
+end

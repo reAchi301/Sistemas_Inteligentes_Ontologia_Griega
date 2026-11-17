@@ -1,0 +1,123 @@
+// =====================================================================
+// andromeda.drl  -  Escenario F2-1: el mito de la liberacion de Andromeda
+// Reglas especificas del mito de Perseo (las genericas estan en base.drl)
+// =====================================================================
+package reglas
+
+import mitologia.modelo.*
+
+// Hefesto pule el escudo de bronce hasta convertirlo en espejo
+rule "Hefesto convierte el EscudoBronce en EscudoEspejo"
+    agenda-group "mitos"
+    when
+        $h : Heroe($nh : nombre, vivo == true)
+        TieneFavor(personaje == $nh, dios == "Hefesto")
+        $p : Posee(poseedor == $nh, objeto == "EscudoBronce")
+    then
+        delete($p);
+        insert(new Posee($nh, "EscudoEspejo"));
+        insert(new Suceso($nh + " obtiene EscudoEspejo debido a tener el favor de Hefesto y el EscudoBronce"));
+end
+
+// Hermes y Atenea guian al heroe hasta las Grayas
+rule "Localizar a las Grayas"
+    agenda-group "mitos"
+    when
+        $h : Heroe($nh : nombre, vivo == true)
+        TieneFavor(personaje == $nh, dios == "Hermes")
+        TieneFavor(personaje == $nh, dios == "Atenea")
+        not Localiza(personaje == $nh, localizado == "Grayas")
+    then
+        insert(new Localiza($nh, "Grayas"));
+        insert(new Suceso($nh + " localiza a las Grayas debido a tener el favor de Hermes y Atenea"));
+end
+
+// Siendo invisible, el heroe roba el ojo que comparten las Grayas
+rule "Robar el ojo de las Grayas"
+    agenda-group "mitos"
+    when
+        $h : Heroe($nh : nombre, vivo == true)
+        Localiza(personaje == $nh, localizado == "Grayas")
+        TieneCapacidad(personaje == $nh, capacidad == "Invisibilidad")
+        $p : Posee(poseedor == "Grayas", objeto == "OjoGrayas")
+        not Localiza(personaje == $nh, localizado == "Ninfas")
+    then
+        delete($p);
+        insert(new Posee($nh, "OjoGrayas"));
+        insert(new Suceso($nh + " obtiene (roba) OjoGrayas debido a tener Invisibilidad y las Grayas localizadas"));
+end
+
+// Devuelve el ojo a cambio de saber donde estan las Ninfas
+rule "Intercambiar el ojo por la localizacion de las Ninfas"
+    agenda-group "mitos"
+    when
+        $h : Heroe($nh : nombre, vivo == true)
+        $p : Posee(poseedor == $nh, objeto == "OjoGrayas")
+        not Localiza(personaje == $nh, localizado == "Ninfas")
+    then
+        delete($p);
+        insert(new Posee("Grayas", "OjoGrayas"));
+        insert(new Localiza($nh, "Ninfas"));
+        insert(new Suceso($nh + " localiza a las Ninfas debido a intercambiar el OjoGrayas con las Grayas"));
+end
+
+// Las Ninfas entregan sus objetos a quien las encuentra
+rule "Las Ninfas entregan sus objetos"
+    agenda-group "mitos"
+    when
+        $h : Heroe($nh : nombre, vivo == true)
+        Localiza(personaje == $nh, localizado == "Ninfas")
+        $p : Posee(poseedor == "Ninfas", $o : objeto)
+    then
+        delete($p);
+        insert(new Posee($nh, $o));
+        insert(new Suceso($nh + " obtiene " + $o + " debido a tener las Ninfas localizadas"));
+end
+
+// Matar a Medusa: pide CAPACIDADES (no objetos concretos) para que sirva
+// cualquier forma de volar, de ser invisible o de tener un espejo (fase 2)
+rule "Matar a Medusa"
+    agenda-group "mitos"
+    when
+        $h : Heroe($nh : nombre, vivo == true)
+        $m : Criatura(nombre == "Medusa", vivo == true)
+        TieneCapacidad(personaje == $nh, capacidad == "Vuelo")
+        TieneCapacidad(personaje == $nh, capacidad == "Invisibilidad")
+        TieneCapacidad(personaje == $nh, capacidad == "Espejo")
+        Posee(poseedor == $nh, $a : objeto)
+        Arma(nombre == $a)
+        Posee(poseedor == $nh, objeto == "ZurronMagico")
+    then
+        modify($m) { setVivo(false) };
+        insert(new Mata($nh, "Medusa"));
+        insert(new Suceso($nh + " mata a Medusa debido a tener " + $a
+            + ", Espejo, Invisibilidad, Vuelo y ZurronMagico para guardar la cabeza"));
+end
+
+// Sin zurron magico, la cabeza de Medusa petrifica a quien la lleva
+rule "La cabeza de Medusa petrifica a quien no tiene zurron"
+    agenda-group "mitos"
+    when
+        $h : Personaje($nh : nombre, vivo == true, this instanceof Heroe || this instanceof Mortal)
+        Posee(poseedor == $nh, objeto == "CabezaMedusa")
+        not Posee(poseedor == $nh, objeto == "ZurronMagico")
+    then
+        modify($h) { setVivo(false) };
+        insert(new Suceso($nh + " muere petrificado debido a llevar CabezaMedusa sin ZurronMagico"));
+end
+
+// Matar a la criatura marina (Ceto, Kraken...) que tiene a alguien preso:
+// hace falta volar hasta ella y poder petrificarla
+rule "Petrificar a la criatura captora"
+    agenda-group "mitos"
+    when
+        $h : Personaje($nh : nombre, vivo == true, this instanceof Heroe || this instanceof Mortal)
+        $c : Criatura($nc : nombre, vivo == true, nombre != "Medusa")
+        PresoDe(captor == $nc)
+        TieneCapacidad(personaje == $nh, capacidad == "Petrificar")
+        TieneCapacidad(personaje == $nh, capacidad == "Vuelo")
+    then
+        modify($c) { setVivo(false) };
+        insert(new Mata($nh, $nc));
+        insert(new Suceso($nh + " mata a " + $nc + " debido a tener CabezaMedusa (Petrificar) y Vuelo"));
+end
