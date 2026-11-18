@@ -1,0 +1,208 @@
+// =====================================================================
+// laberinto.drl  -  Mito del Laberinto de Creta (F2-2) y "las chicas se empoderan" (F2-6)
+// Autor: Artem Vaskevych. Usa solo los tipos de hecho del modelo comun (sin tipos nuevos):
+//   - "encerrado en el laberinto"  = PresoDe(x, "Minos")
+//   - "entrar a buscar al Minotauro" = Localiza(x, "Minotauro")
+// Las reglas solo se activan si el escenario encierra al Minotauro (PresoDe Minotauro-Minos),
+// asi no interfieren con los mitos de otros escenarios (p. ej. F2-1).
+// =====================================================================
+package reglas
+
+import mitologia.modelo.*
+
+// ---------------------------------------------------------------------
+// 1. Minos manda construir el laberinto y encierra en el al Minotauro
+// ---------------------------------------------------------------------
+rule "Dedalo e Icaro construyen el laberinto por orden de Minos"
+    agenda-group "mitos"
+    salience 30
+    when
+        PresoDe(preso == "Minotauro", captor == "Minos")
+        $m : Criatura(nombre == "Minotauro", vivo == true, libre == true)
+        Mortal(nombre == "Dedalo", vivo == true)
+        Mortal(nombre == "Icaro", vivo == true)
+        not Lugar(nombre == "LaberintoCreta")
+    then
+        insert(new Lugar("LaberintoCreta"));
+        modify($m) { setLibre(false) };
+        insert(new Suceso("Dedalo e Icaro construyen el LaberintoCreta debido a la orden de Minos"));
+        insert(new Suceso("Minotauro queda encerrado en el LaberintoCreta debido a estar preso de Minos"));
+end
+
+// ---------------------------------------------------------------------
+// 2. Ariadna da el hilo a quien tiene su favor (antes de entrar al laberinto)
+// ---------------------------------------------------------------------
+rule "Ariadna da el HiloAriadna a quien tiene su favor"
+    agenda-group "mitos"
+    salience 20
+    when
+        TieneFavor($h : personaje, dios == "Ariadna")
+        Heroe(nombre == $h, vivo == true)
+        $p : Posee(poseedor == "Ariadna", objeto == "HiloAriadna")
+        Lugar(nombre == "LaberintoCreta")
+    then
+        delete($p);
+        insert(new Posee($h, "HiloAriadna"));
+        insert(new Suceso($h + " obtiene HiloAriadna debido a tener el favor de Ariadna"));
+end
+
+// ---------------------------------------------------------------------
+// 3. Entrar al laberinto sin orientacion: el Minotauro apresa al intruso
+// ---------------------------------------------------------------------
+rule "El Minotauro apresa a quien entra sin orientacion"
+    agenda-group "mitos"
+    salience 0
+    when
+        Lugar(nombre == "LaberintoCreta")
+        Criatura(nombre == "Minotauro", vivo == true)
+        $l : Localiza($x : personaje, localizado == "Minotauro")
+        $v : Personaje(nombre == $x, vivo == true, libre == true)
+        not TieneCapacidad(personaje == $x, capacidad == "Orientacion")
+        // tampoco si ya lleva un objeto que da Orientacion (p. ej. HiloAriadna):
+        // asi no depende del orden en que se dispara la regla generica de capacidades
+        not (Posee(poseedor == $x, $o : objeto) and Otorga(objeto == $o, capacidad == "Orientacion"))
+        not PresoDe(preso == $x)
+    then
+        delete($l);
+        modify($v) { setLibre(false) };
+        insert(new PresoDe($x, "Minotauro"));
+        insert(new Suceso($x + " queda preso del Minotauro debido a entrar en el LaberintoCreta sin Orientacion"));
+end
+
+// ---------------------------------------------------------------------
+// 4. F2-6: una diosa arma a la mortal que tiene su favor para rescatar al preso
+// ---------------------------------------------------------------------
+rule "Atenea arma a quien tiene su favor para rescatar al preso del Minotauro"
+    agenda-group "mitos"
+    salience 10
+    when
+        PresoDe($z : preso, captor == "Minotauro")
+        TieneFavor($a : personaje, dios == "Atenea")
+        Mortal(nombre == $a, vivo == true, libre == true)
+        not Posee(poseedor == $a, objeto == "EspadaIndestructible")
+    then
+        insert(new Posee($a, "EspadaIndestructible"));
+        insert(new Suceso($a + " obtiene EspadaIndestructible debido a tener el favor de Atenea para rescatar a " + $z));
+end
+
+// Quien tiene Orientacion y un arma entra a buscar al Minotauro para rescatar a su preso
+rule "Entrar al laberinto a rescatar al preso"
+    agenda-group "mitos"
+    salience 5
+    when
+        PresoDe($z : preso, captor == "Minotauro")
+        $r : Personaje($a : nombre, vivo == true, libre == true)
+        TieneCapacidad(personaje == $a, capacidad == "Orientacion")
+        Posee(poseedor == $a, $o : objeto)
+        Arma(nombre == $o)
+        not Localiza(personaje == $a, localizado == "Minotauro")
+    then
+        insert(new Localiza($a, "Minotauro"));
+        insert(new Suceso($a + " entra en el LaberintoCreta debido a tener Orientacion y " + $o + " para rescatar a " + $z));
+end
+
+// ---------------------------------------------------------------------
+// 5. Con Orientacion y un arma se encuentra y se mata al Minotauro
+// ---------------------------------------------------------------------
+rule "Matar al Minotauro en el laberinto"
+    agenda-group "mitos"
+    salience 0
+    when
+        Lugar(nombre == "LaberintoCreta")
+        $m : Criatura(nombre == "Minotauro", vivo == true)
+        Localiza($x : personaje, localizado == "Minotauro")
+        Personaje(nombre == $x, vivo == true, libre == true)
+        TieneCapacidad(personaje == $x, capacidad == "Orientacion")
+        Posee(poseedor == $x, $o : objeto)
+        Arma(nombre == $o)
+    then
+        modify($m) { setVivo(false) };
+        insert(new Mata($x, "Minotauro"));
+        insert(new Suceso($x + " mata al Minotauro debido a tener " + $o + " y Orientacion para no perderse"));
+        insert(new Suceso($x + " sale del LaberintoCreta debido a tener Orientacion"));
+end
+
+// ---------------------------------------------------------------------
+// 6. Minos culpa a Dedalo y lo encierra con su hijo Icaro en el laberinto
+// ---------------------------------------------------------------------
+rule "Minos encierra a Dedalo e Icaro por la muerte del Minotauro"
+    agenda-group "mitos"
+    salience 0
+    when
+        Mata($x : asesino, victima == "Minotauro")
+        $d : Mortal(nombre == "Dedalo", vivo == true, libre == true)
+        $i : Mortal(nombre == "Icaro", vivo == true, libre == true)
+        not TieneEnojo(personaje == "Dedalo", dios == "Minos")
+    then
+        insert(new TieneEnojo("Dedalo", "Minos"));
+        insert(new PresoDe("Dedalo", "Minos"));
+        insert(new PresoDe("Icaro", "Minos"));
+        modify($d) { setLibre(false) };
+        modify($i) { setLibre(false) };
+        insert(new Suceso("Dedalo tiene el enojo de Minos debido a que " + $x + " entro y salio del LaberintoCreta"));
+        insert(new Suceso("Dedalo e Icaro quedan encerrados en el LaberintoCreta debido al enojo de Minos"));
+end
+
+// ---------------------------------------------------------------------
+// 7. Con cera de abejas y plumas Dedalo construye dos pares de alas
+// ---------------------------------------------------------------------
+rule "Dedalo construye las alas en el laberinto"
+    agenda-group "mitos"
+    salience 0
+    when
+        PresoDe(preso == "Dedalo", captor == "Minos")
+        PresoDe(preso == "Icaro", captor == "Minos")
+        not Magico(nombre == "AlasDedalo")
+    then
+        insert(new Objeto("CeraAbejas"));
+        insert(new Objeto("Plumas"));
+        insert(new Magico("AlasDedalo"));
+        insert(new Magico("AlasIcaro"));
+        insert(new Otorga("AlasDedalo", "Vuelo"));
+        insert(new Otorga("AlasIcaro", "Vuelo"));
+        insert(new Posee("Dedalo", "AlasDedalo"));
+        insert(new Posee("Dedalo", "AlasIcaro"));
+        insert(new Suceso("Dedalo construye AlasDedalo y AlasIcaro debido a encontrar CeraAbejas y Plumas en el LaberintoCreta"));
+end
+
+rule "Dedalo da sus alas a Icaro"
+    agenda-group "mitos"
+    salience 0
+    when
+        $p : Posee(poseedor == "Dedalo", objeto == "AlasIcaro")
+        Mortal(nombre == "Icaro", vivo == true)
+    then
+        delete($p);
+        insert(new Posee("Icaro", "AlasIcaro"));
+        insert(new Suceso("Icaro obtiene AlasIcaro debido a que Dedalo las construyo para su hijo"));
+end
+
+// ---------------------------------------------------------------------
+// 8. Huida volando: Dedalo sale del laberinto; Icaro vuela demasiado alto y muere
+// ---------------------------------------------------------------------
+rule "Escapar del laberinto volando"
+    agenda-group "mitos"
+    salience 0
+    when
+        $pd : PresoDe($x : preso, captor == "Minos")
+        $v : Personaje(nombre == $x, vivo == true)
+        TieneCapacidad(personaje == $x, capacidad == "Vuelo")
+    then
+        delete($pd);
+        modify($v) { setLibre(true) };
+        insert(new Suceso($x + " escapa del LaberintoCreta debido a tener la capacidad Vuelo"));
+end
+
+rule "Icaro vuela demasiado cerca del sol y muere"
+    agenda-group "mitos"
+    salience -10
+    when
+        $i : Mortal(nombre == "Icaro", vivo == true, libre == true)
+        TieneEnojo(personaje == "Dedalo", dios == "Minos")
+        $p : Posee(poseedor == "Icaro", objeto == "AlasIcaro")
+        TieneCapacidad(personaje == "Icaro", capacidad == "Vuelo")
+    then
+        modify($i) { setVivo(false) };
+        delete($p);
+        insert(new Suceso("Icaro muere debido a volar demasiado cerca del sol: la CeraAbejas se derrite y AlasIcaro quedan en el mar"));
+end

@@ -1,0 +1,6 @@
+Puede Teseo matar a Minotauro?
+Condiciones:
+Minotauro es preso de Minos
+Teseo tiene el favor de Ariadna
+Teseo tiene Espada de Teseo
+Teseo localiza a Minotauro

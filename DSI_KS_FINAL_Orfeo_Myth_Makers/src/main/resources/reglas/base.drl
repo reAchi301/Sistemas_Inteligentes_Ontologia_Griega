@@ -82,6 +82,8 @@ rule "Conocimiento inicial por defecto"
         insert(new Capacidad("Espejo"));
         insert(new Capacidad("Petrificar"));
         insert(new Capacidad("Orientacion"));
+        insert(new Capacidad("TransportarCabezaMedusa"));
+        insert(new Capacidad("Domar"));
 
         // ---- Que capacidad da cada objeto (slot otorgaCapacidad) ----
         insert(new Otorga("SandaliasAladas", "Vuelo"));
@@ -92,6 +94,8 @@ rule "Conocimiento inicial por defecto"
         insert(new Otorga("EspejoMano", "Espejo"));
         insert(new Otorga("CabezaMedusa", "Petrificar"));
         insert(new Otorga("HiloAriadna", "Orientacion"));
+        insert(new Otorga("ZurronMagico", "TransportarCabezaMedusa")); // guarda la cabeza de Medusa sin petrificar
+        insert(new Otorga("BridaOro", "Domar"));                       // la brida de oro doma a Pegaso
 
         // ---- Quien tiene cada objeto al empezar (slot poseeObjeto) ----
         insert(new Posee("Atenea", "EscudoBronce"));

@@ -5,39 +5,76 @@
 
 ([AlasDedalo] of  Magico
 
-	(otorgaCapacidad [Vuelo])
-	(poseidoPor [Dedalo]))
+	(otorgaCapacidad [Vuelo]))
+
+([AlasIcaro] of  Magico
+
+	(otorgaCapacidad [Vuelo]))
 
 ([Andromeda] of  Mortal
 
-	(estadoLibre FALSE)
+	(estadoLibre TRUE)
 	(estadoVivo TRUE)
-	(presoDe [Ceto])
+	(hijoDe
+		[Casiopea]
+		[Cefeo])
 	(ubicadoEn [CostaEtiopia]))
 
+([AnilloInvisibilidad] of  Magico
+
+	(otorgaCapacidad [Invisibilidad]))
+
 ([Ariadna] of  Mortal
-)
+
+	(estadoLibre TRUE)
+	(estadoVivo TRUE)
+	(poseeObjeto [HiloAriadna]))
 
 ([Atenea] of  Dios
-)
+
+	(estadoLibre TRUE)
+	(estadoVivo TRUE)
+	(poseeObjeto [EscudoBronce]))
+
+([BridaOro] of  Magico
+
+	(otorgaCapacidad [Domar])
+	(poseidoPor [Hefesto]))
 
 ([CabezaMedusa] of  Trofeo
-)
+
+	(otorgaCapacidad [Petrificar])
+	(poseidoPor [Medusa]))
 
 ([CascoHades] of  Magico
-)
+
+	(otorgaCapacidad [Invisibilidad])
+	(poseidoPor [Hades]))
 
 ([Casiopea] of  Mortal
-)
+
+	(estadoLibre TRUE)
+	(estadoVivo TRUE))
 
 ([Cefeo] of  Mortal
+
+	(estadoLibre TRUE)
+	(estadoVivo TRUE))
+
+([CeraAbejas] of  Objeto
 )
 
 ([Ceto] of  Criatura
 
-	(estadoLibre TRUE)
-	(tienePreso [Andromeda])
+	(estadoLibre FALSE)
+	(estadoVivo TRUE)
+	(presoDe [Poseidon])
+	(tieneFavor [Poseidon])
 	(ubicadoEn [CostaEtiopia]))
+
+([ConjuroVuelo] of  Magico
+
+	(otorgaCapacidad [Vuelo]))
 
 ([CostaEtiopia] of  Lugar
 
@@ -51,19 +88,24 @@
 
 ([Dedalo] of  Mortal
 
-	(estadoVivo TRUE)
-	(poseeObjeto [AlasDedalo])
-	(presoDe [Minos])
-	(ubicadoEn [LaberintoCreta]))
+	(estadoLibre TRUE)
+	(estadoVivo TRUE))
+
+([Domar] of  Capacidad
+)
 
 ([Doris] of  SerDivino
-)
+
+	(estadoLibre TRUE)
+	(estadoVivo TRUE))
 
 ([EscudoBronce] of  Proteccion
-)
+
+	(poseidoPor [Atenea]))
 
 ([EscudoEspejo] of  Proteccion
-)
+
+	(otorgaCapacidad [Espejo]))
 
 ([EspadaIndestructible] of  Arma
 )
@@ -72,47 +114,69 @@
 
 	(poseidoPor [Teseo]))
 
-([Grayas] of  SerDivino
+([Espejo] of  Capacidad
 )
+
+([EspejoMano] of  Proteccion
+
+	(otorgaCapacidad [Espejo]))
+
+([Grayas] of  SerDivino
+
+	(estadoLibre TRUE)
+	(estadoVivo TRUE)
+	(poseeObjeto [OjoGrayas]))
 
 ([Hades] of  Dios
-)
+
+	(estadoLibre TRUE)
+	(estadoVivo TRUE)
+	(poseeObjeto [CascoHades]))
 
 ([Hefesto] of  Dios
-)
+
+	(estadoLibre TRUE)
+	(estadoVivo TRUE)
+	(poseeObjeto [BridaOro]))
 
 ([Heracles] of  Heroe
-)
+
+	(estadoLibre TRUE)
+	(estadoVivo TRUE)
+	(hijoDe [Zeus]))
 
 ([Hermes] of  Dios
-)
+
+	(estadoLibre TRUE)
+	(estadoVivo TRUE)
+	(poseeObjeto [HozAcero]))
 
 ([HiloAriadna] of  Magico
 
 	(otorgaCapacidad [Orientacion])
-	(poseidoPor [Teseo])
-	(ubicadoEn [LaberintoCreta]))
+	(poseidoPor [Ariadna]))
 
 ([HozAcero] of  Arma
-)
+
+	(poseidoPor [Hermes]))
 
 ([Icaro] of  Mortal
-)
+
+	(estadoLibre TRUE)
+	(estadoVivo TRUE)
+	(hijoDe [Dedalo]))
 
 ([Invisibilidad] of  Capacidad
 )
 
 ([Kraken] of  Criatura
-)
+
+	(estadoLibre TRUE)
+	(estadoVivo TRUE))
 
 ([LaberintoCreta] of  Lugar
 
-	(contieneA
-		[HiloAriadna]
-		[Teseo]
-		[Minotauro]
-		[Dedalo]
-		[Minos]))
+	(contieneA [Minotauro]))
 
 ([MatarMinotauro] of  Accion
 
@@ -122,19 +186,23 @@
 	(usaObjeto [EspadaTeseo]))
 
 ([Medusa] of  Criatura
-)
+
+	(estadoLibre TRUE)
+	(estadoVivo TRUE)
+	(poseeObjeto [CabezaMedusa]))
 
 ([Minos] of  Mortal
 
 	(estadoLibre TRUE)
 	(estadoVivo TRUE)
-	(tienePreso [Dedalo])
-	(ubicadoEn [LaberintoCreta]))
+	(tienePreso [Minotauro]))
 
 ([Minotauro] of  Criatura
 
-	(estadoVivo FALSE)
+	(estadoLibre FALSE)
+	(estadoVivo TRUE)
 	(poseeObjeto [CuernoMinotauro])
+	(presoDe [Minos])
 	(ubicadoEn [LaberintoCreta]))
 
 ([mitologia_Class11] of  %3APAL-CONSTRAINT
@@ -159,10 +227,21 @@
 	(%3APAL-STATEMENT "(forall ?a (forall ?p (forall ?o\n                              (=> (and (realizadaPor ?a ?p) (usaObjeto ?a ?o))\n                                  (poseeObjeto ?p ?o)))))"))
 
 ([Nereidas] of  SerDivino
-)
+
+	(estadoLibre TRUE)
+	(estadoVivo TRUE))
 
 ([Ninfas] of  SerDivino
-)
+
+	(estadoLibre TRUE)
+	(estadoVivo TRUE)
+	(poseeObjeto
+		[SandaliasAladas]
+		[ZurronMagico]))
+
+([OjoGrayas] of  Objeto
+
+	(poseidoPor [Grayas]))
 
 ([Olimpo] of  Lugar
 )
@@ -172,35 +251,55 @@
 
 ([Pasifae] of  Mortal
 
+	(estadoLibre TRUE)
 	(estadoVivo TRUE))
 
 ([Pegaso] of  Criatura
-)
+
+	(estadoLibre TRUE)
+	(estadoVivo TRUE))
 
 ([Perseo] of  Heroe
+
+	(estadoLibre TRUE)
+	(estadoVivo TRUE)
+	(hijoDe [Zeus]))
+
+([Petrificar] of  Capacidad
+)
+
+([Plumas] of  Objeto
 )
 
 ([Poseidon] of  Dios
-)
+
+	(estadoLibre TRUE)
+	(estadoVivo TRUE)
+	(tienePreso [Ceto]))
 
 ([SandaliasAladas] of  Magico
-)
+
+	(otorgaCapacidad [Vuelo])
+	(poseidoPor [Ninfas]))
 
 ([Teseo] of  Heroe
 
 	(estadoLibre TRUE)
 	(estadoVivo TRUE)
-	(poseeObjeto
-		[HiloAriadna]
-		[EspadaTeseo])
-	(tieneCapacidad [Orientacion])
-	(ubicadoEn [LaberintoCreta]))
+	(poseeObjeto [EspadaTeseo]))
+
+([TransportarCabezaMedusa] of  Capacidad
+)
 
 ([Vuelo] of  Capacidad
 )
 
 ([Zeus] of  Dios
-)
+
+	(estadoLibre TRUE)
+	(estadoVivo TRUE))
 
 ([ZurronMagico] of  Magico
-)
+
+	(otorgaCapacidad [TransportarCabezaMedusa])
+	(poseidoPor [Ninfas]))

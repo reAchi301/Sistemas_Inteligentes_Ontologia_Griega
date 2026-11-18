@@ -19,6 +19,11 @@
 ;+		(allowed-classes Lugar)
 ;+		(cardinality 0 1)
 		(create-accessor read-write))
+	(multislot hijoDe
+;+		(comment "Progenitores del personaje (padre o madre)")
+		(type INSTANCE)
+;+		(allowed-classes Personaje)
+		(create-accessor read-write))
 	(multislot tieneFavor
 ;+		(comment "Define un personaje con la bendición/favor de un Dios")
 		(type INSTANCE)
@@ -86,7 +91,6 @@
 ;+		(comment "Vincula un objeto con una Capacidad")
 		(type INSTANCE)
 ;+		(allowed-classes Capacidad)
-		(cardinality 1 ?VARIABLE)
 		(create-accessor read-write))
 	(single-slot realizadaPor
 ;+		(comment "Quién realiza la acción")
@@ -120,6 +124,11 @@
 (defclass Personaje "Agrupa todos los actores que participan en el mito"
 	(is-a Entidad)
 	(role concrete)
+	(multislot hijoDe
+;+		(comment "Progenitores del personaje (padre o madre)")
+		(type INSTANCE)
+;+		(allowed-classes Personaje)
+		(create-accessor read-write))
 	(multislot tienePreso
 ;+		(comment "Personajes que mantiene cautivos")
 		(type INSTANCE)
@@ -196,6 +205,11 @@
 (defclass Objeto "Agrupa todos los ítems manipulables por los personajes."
 	(is-a Entidad)
 	(role concrete)
+	(multislot otorgaCapacidad
+;+		(comment "Vincula un objeto con una Capacidad")
+		(type INSTANCE)
+;+		(allowed-classes Capacidad)
+		(create-accessor read-write))
 	(single-slot poseidoPor
 ;+		(comment "Personaje que tiene el objeto")
 		(type INSTANCE)
@@ -211,11 +225,11 @@
 	(is-a Objeto)
 	(role concrete))
 
-(defclass Proteccion "Instancias: EscudoBronce, EscudoEspejo."
+(defclass Proteccion "Instancias: EscudoBronce, EscudoEspejo, EspejoMano."
 	(is-a Objeto)
 	(role concrete))
 
-(defclass Magico "Instancias: CascoHades, SandaliasAladas, ZurronMagico, HiloAriadna."
+(defclass Magico "Instancias: CascoHades, SandaliasAladas, ZurronMagico, HiloAriadna, BridaOro, AnilloInvisibilidad, ConjuroVuelo, AlasDedalo, AlasIcaro."
 	(is-a Objeto)
 	(role concrete)
 	(multislot otorgaCapacidad
