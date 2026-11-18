@@ -1,4 +1,4 @@
-; Fri Nov 13 22:40:39 EET 2026
+; Wed Nov 18 15:00:30 EET 2026
 ; 
 ;+ (version "3.4.8")
 ;+ (build "Build 629")
@@ -20,9 +20,9 @@
 ([BROWSER_SLOT_NAMES] of  Property_List
 
 	(properties
-		[mitologia_ProjectKB_Class10370]
-		[mitologia_ProjectKB_Class10371]
-		[mitologia_ProjectKB_Class10372]))
+		[mitologia_ProjectKB_Class10027]
+		[mitologia_ProjectKB_Class10028]
+		[mitologia_ProjectKB_Class10029]))
 
 ([CLSES_TAB] of  Widget
 
@@ -74,9 +74,9 @@
 ([KB_583918_Class1] of  Map
 
 	(entries
-		[mitologia_ProjectKB_Class10373]
-		[mitologia_ProjectKB_Class10374]
-		[mitologia_ProjectKB_Class10375]))
+		[mitologia_ProjectKB_Class10030]
+		[mitologia_ProjectKB_Class10031]
+		[mitologia_ProjectKB_Class10032]))
 
 ([KB_583918_Class100] of  Property_List
 )
@@ -170,7 +170,7 @@
 ([KB_583918_Class99] of  Property_List
 )
 
-([KB_680204_Class3] of  Map
+([KB_837034_Class3] of  Map
 )
 
 ([LAYOUT_PROPERTIES] of  Property_List
@@ -183,6 +183,42 @@
 	(is_hidden TRUE)
 	(property_list [mitologia_ProjectKB_Class11])
 	(widget_class_name "edu.stanford.smi.protege.widget.ClsesAndInstancesTab"))
+
+([mitologia_ProjectKB_Class10027] of  String
+
+	(name ":INSTANCE-ANNOTATION")
+	(string_value "%3AANNOTATION-TEXT"))
+
+([mitologia_ProjectKB_Class10028] of  String
+
+	(name ":PAL-CONSTRAINT")
+	(string_value "%3APAL-NAME"))
+
+([mitologia_ProjectKB_Class10029] of  String
+
+	(name ":META-CLASS")
+	(string_value "%3ANAME"))
+
+([mitologia_ProjectKB_Class10030] of  Map_Entry
+
+	(key "suppress_instance_counting")
+	(key_class "java.lang.String")
+	(value "false")
+	(value_class "java.lang.String"))
+
+([mitologia_ProjectKB_Class10031] of  Map_Entry
+
+	(key "add_name_on_instance_form")
+	(key_class "java.lang.String")
+	(value "false")
+	(value_class "java.lang.String"))
+
+([mitologia_ProjectKB_Class10032] of  Map_Entry
+
+	(key "change_tracking_active")
+	(key_class "java.lang.String")
+	(value "false")
+	(value_class "java.lang.String"))
 
 ([mitologia_ProjectKB_Class10076] of  Property_List
 
@@ -199,42 +235,6 @@
 
 ([mitologia_ProjectKB_Class10080] of  Property_List
 )
-
-([mitologia_ProjectKB_Class10370] of  String
-
-	(name ":INSTANCE-ANNOTATION")
-	(string_value "%3AANNOTATION-TEXT"))
-
-([mitologia_ProjectKB_Class10371] of  String
-
-	(name ":PAL-CONSTRAINT")
-	(string_value "%3APAL-NAME"))
-
-([mitologia_ProjectKB_Class10372] of  String
-
-	(name ":META-CLASS")
-	(string_value "%3ANAME"))
-
-([mitologia_ProjectKB_Class10373] of  Map_Entry
-
-	(key "suppress_instance_counting")
-	(key_class "java.lang.String")
-	(value "false")
-	(value_class "java.lang.String"))
-
-([mitologia_ProjectKB_Class10374] of  Map_Entry
-
-	(key "add_name_on_instance_form")
-	(key_class "java.lang.String")
-	(value "false")
-	(value_class "java.lang.String"))
-
-([mitologia_ProjectKB_Class10375] of  Map_Entry
-
-	(key "change_tracking_active")
-	(key_class "java.lang.String")
-	(value "false")
-	(value_class "java.lang.String"))
 
 ([mitologia_ProjectKB_Class10399] of  Integer
 

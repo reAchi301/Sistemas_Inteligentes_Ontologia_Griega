@@ -1,4 +1,4 @@
-; Fri Nov 13 22:40:39 EET 2026
+; Wed Nov 18 15:00:30 EET 2026
 ; 
 ;+ (version "3.4.8")
 ;+ (build "Build 629")
@@ -19,15 +19,15 @@
 ;+		(allowed-classes Lugar)
 ;+		(cardinality 0 1)
 		(create-accessor read-write))
+	(multislot tieneFavor
+;+		(comment "Define un personaje con la bendición/favor de un Dios")
+		(type INSTANCE)
+;+		(allowed-classes Dios Mortal)
+		(create-accessor read-write))
 	(multislot hijoDe
 ;+		(comment "Progenitores del personaje (padre o madre)")
 		(type INSTANCE)
 ;+		(allowed-classes Personaje)
-		(create-accessor read-write))
-	(multislot tieneFavor
-;+		(comment "Define un personaje con la bendición/favor de un Dios")
-		(type INSTANCE)
-;+		(allowed-classes Dios)
 		(create-accessor read-write))
 	(multislot tieneCapacidad
 ;+		(comment "Capacidades activas")
@@ -179,7 +179,7 @@
 	(multislot tieneFavor
 ;+		(comment "Define un personaje con la bendición/favor de un Dios")
 		(type INSTANCE)
-;+		(allowed-classes Dios)
+;+		(allowed-classes Dios Mortal)
 		(create-accessor read-write)))
 
 (defclass Dios "Instancias: Zeus, Atenea, Hermes, Hades, Hefesto, Poseidon."
@@ -205,11 +205,6 @@
 (defclass Objeto "Agrupa todos los ítems manipulables por los personajes."
 	(is-a Entidad)
 	(role concrete)
-	(multislot otorgaCapacidad
-;+		(comment "Vincula un objeto con una Capacidad")
-		(type INSTANCE)
-;+		(allowed-classes Capacidad)
-		(create-accessor read-write))
 	(single-slot poseidoPor
 ;+		(comment "Personaje que tiene el objeto")
 		(type INSTANCE)
@@ -219,6 +214,11 @@
 	(single-slot %3ANAME
 		(type STRING)
 ;+		(cardinality 0 1)
+		(create-accessor read-write))
+	(multislot otorgaCapacidad
+;+		(comment "Vincula un objeto con una Capacidad")
+		(type INSTANCE)
+;+		(allowed-classes Capacidad)
 		(create-accessor read-write)))
 
 (defclass Arma "Instancias: HozAcero, EspadaIndestructible, EspadaTeseo, CuernoMinotauro."
