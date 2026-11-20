@@ -1,6 +1,12 @@
 // =====================================================================
 // base.drl  -  Conocimiento por defecto y reglas COMUNES a todos los mitos
 // (todo el equipo usa este fichero; cada escenario anade su propio .drl)
+//
+//Modificaciones más relevantes:
+//En la base de hechos solo existe lo que empieza en cada historia,
+// los hechos que se crean (nacimiento del Minotauro, LaberintoCreta, etc) lo insertan las reglas correspondientes.
+//Favor/Enojo y ayuda: quien concede uno borra a su contrario (no se puede tener favor y enojo)
+//Apresa: quien apresa borra su PresoDe Anterior
 // =====================================================================
 package reglas
 
@@ -50,22 +56,28 @@ rule "Conocimiento inicial por defecto"
         insert(new Mortal("Ariadna"));
         insert(new Mortal("Dedalo"));
         insert(new Mortal("Icaro"));
+        insert(new Mortal("Pasifae"));
         // ---- Criaturas ----
-        Criatura ceto = new Criatura("Ceto");
-        ceto.setLibre(false);                       // Ceto empieza encerrada por Poseidon
-        insert(ceto);
+       // Criatura ceto = new Criatura("Ceto");
+       // ceto.setLibre(false);                       // Ceto empieza encerrada por Poseidon
+        //Modificado, Ceto empieza preso, pero se define en el constructor
+        insert(new Criatura("Ceto", false));
         insert(new Criatura("Kraken"));
         insert(new Criatura("Medusa"));
-        insert(new Criatura("Minotauro"));
+        insert(new Criatura("ToroBlanco"));
+        insert(new Criatura("ToroMinos"));
+        insert(new Criatura("ToroMar"));
+        
+        // ---- Lugares ----
+        insert(new Lugar("Creta"));
 
         // ---- Objetos ----
         insert(new Arma("HozAcero"));
         insert(new Arma("EspadaIndestructible"));
         insert(new Arma("EspadaTeseo"));
-        insert(new Arma("CuernoMinotauro"));
+        insert(new Arma("EspadaRey"));
         insert(new Proteccion("EscudoBronce"));
-        insert(new Proteccion("EscudoEspejo"));
-        insert(new Proteccion("EspejoMano"));
+        insert(new Magico("EspejoMano"));
         insert(new Magico("CascoHades"));
         insert(new Magico("SandaliasAladas"));
         insert(new Magico("ZurronMagico"));
@@ -73,8 +85,9 @@ rule "Conocimiento inicial por defecto"
         insert(new Magico("BridaOro"));
         insert(new Magico("AnilloInvisibilidad"));
         insert(new Magico("ConjuroVuelo"));
-        insert(new Objeto("OjoGrayas"));
+        insert(new Trofeo("OjoGrayas"));
         insert(new Trofeo("CabezaMedusa"));
+        insert(new Trofeo("CabezaCeto"));
 
         // ---- Capacidades ----
         insert(new Capacidad("Vuelo"));
@@ -82,40 +95,54 @@ rule "Conocimiento inicial por defecto"
         insert(new Capacidad("Espejo"));
         insert(new Capacidad("Petrificar"));
         insert(new Capacidad("Orientacion"));
-        insert(new Capacidad("TransportarCabezaMedusa"));
+        //Cambiado TransportarCabezaMedusa por ContieneMagia para que sea más general
+        insert(new Capacidad("ContieneMagia"));
+        insert(new Capacidad("Engano"));
         insert(new Capacidad("Domar"));
 
         // ---- Que capacidad da cada objeto (slot otorgaCapacidad) ----
         insert(new Otorga("SandaliasAladas", "Vuelo"));
         insert(new Otorga("ConjuroVuelo", "Vuelo"));
+        insert(new Otorga("AlasDedalo", "Vuelo"));
+        insert(new Otorga("AlasIcaro", "Vuelo"));
         insert(new Otorga("CascoHades", "Invisibilidad"));
         insert(new Otorga("AnilloInvisibilidad", "Invisibilidad"));
         insert(new Otorga("EscudoEspejo", "Espejo"));
         insert(new Otorga("EspejoMano", "Espejo"));
         insert(new Otorga("CabezaMedusa", "Petrificar"));
         insert(new Otorga("HiloAriadna", "Orientacion"));
-        insert(new Otorga("ZurronMagico", "TransportarCabezaMedusa")); // guarda la cabeza de Medusa sin petrificar
-        insert(new Otorga("BridaOro", "Domar"));                       // la brida de oro doma a Pegaso
+        insert(new Otorga("ZurronMagico", "ContieneMagia")); // guarda la cabeza de Medusa sin petrificar
+        insert(new Otorga("BridaOro", "Domar"));   // la brida de oro doma a Pegaso
+        insert(new Otorga("DisfrazVaca", "Engano"));                    
 
         // ---- Quien tiene cada objeto al empezar (slot poseeObjeto) ----
         insert(new Posee("Atenea", "EscudoBronce"));
         insert(new Posee("Hermes", "HozAcero"));
         insert(new Posee("Hades", "CascoHades"));
         insert(new Posee("Hefesto", "BridaOro"));
+        insert(new Posee("Hefesto", "EspadaIndestructible"));
         insert(new Posee("Ninfas", "SandaliasAladas"));
         insert(new Posee("Ninfas", "ZurronMagico"));
         insert(new Posee("Grayas", "OjoGrayas"));
-        insert(new Posee("Medusa", "CabezaMedusa"));
-        insert(new Posee("Minotauro", "CuernoMinotauro"));
         insert(new Posee("Ariadna", "HiloAriadna"));
+        insert(new Posee("Minos", "EspadaRey"));
+        insert(new Posee("Teseo", "EspadaTeseo"));
+        
+        insert(new Posee("Medusa", "CabezaMedusa"));
+        insert(new Posee("Ceto", "CabezaCeto"));
 
         // ---- Relaciones iniciales ----
         insert(new PresoDe("Ceto", "Poseidon"));      // Poseidon tiene encerrada a Ceto
-        insert(new TieneFavor("Ceto", "Poseidon"));   // Ceto sirve a Poseidon
         insert(new HijoDe("Andromeda", "Casiopea"));
         insert(new HijoDe("Andromeda", "Cefeo"));
         insert(new HijoDe("Perseo", "Zeus"));
         insert(new HijoDe("Heracles", "Zeus"));
+        insert(new HijoDe("Icaro", "Dedalo"));
+        
+         insert(new TieneAyuda("Poseidon","Ceto"));   // Ceto sirve a Poseidon
+         insert(new TieneAyuda("Minos", "Dedalo"));
+         insert(new TieneAyuda("Pasifae", "Dedalo"));
+         insert(new TieneAyuda("Icaro", "Dedalo"));
 end
 
 // Una condicion "X no tiene O" del escenario quita el hecho por defecto
@@ -144,6 +171,17 @@ rule "Aplicar condicion: X tiene O (quitar dueno anterior)"
         delete($viejo);
 end
 
+// X es preso de Y (escenario) implica que X ya no esta libre
+rule "Aplicar condicion: el preso deja de estar libre"
+	agenda-group "inicial"
+	salience 60
+	when
+		PresoDe($p : preso)
+		$v : Personaje(nombre == $p, libre == true)
+	then
+		modify($v) { setLibre(false) };
+end
+
 // ---- Mostrar el estado inicial (pedido en la seccion 10 del enunciado) ----
 rule "Mostrar personajes"
     agenda-group "inicial"
@@ -168,7 +206,7 @@ rule "Mostrar condiciones del escenario"
     agenda-group "inicial"
     salience -30
     when
-        $f : Object(this instanceof TieneFavor || this instanceof TieneEnojo || this instanceof TieneCapacidad)
+        $f : Object(this instanceof TieneFavor ) //|| this instanceof TieneEnojo || this instanceof TieneCapacidad|| this instanceof Posee || this instanceof NoPosee || this instanceof Localiza || this instanceof TieneAyuda || this instanceof PresoDe
     then
         System.out.println("Condicion: " + $f);
 end
@@ -182,6 +220,7 @@ rule "Dios libera criatura por enojo"
     agenda-group "mitos"
     when
         TieneEnojo($x : personaje, $d : dios)
+        Dios(nombre == $d)
         $c : Criatura($nc : nombre, vivo == true, libre == false)
         $pd : PresoDe(preso == $nc, captor == $d)
     then
@@ -195,9 +234,11 @@ rule "Criatura apresa al hijo de quien enojo a su dios"
     agenda-group "mitos"
     when
         TieneEnojo($x : personaje, $d : dios)
+        Dios(nombre == $d)
         HijoDe($h : hijo, progenitor == $x)
         $c : Criatura($nc : nombre, vivo == true, libre == true)
-        TieneFavor(personaje == $nc, dios == $d)
+        not Mata(victima == $nc)
+        TieneAyuda(receptor == $d, ayudante == $nc)
         $v : Personaje(nombre == $h, vivo == true, libre == true)
         not PresoDe(preso == $h)
     then
@@ -258,6 +299,17 @@ rule "Matar al captor libera al preso"
         modify($v) { setLibre(true) };
         insert(new Libera($x, $z));
         insert(new Suceso($x + " libera a " + $z + " debido a matar a " + $y));
+end
+
+// La victima Muere
+rule "Matar la victima muere"
+	agenda-group "mitos"
+	salience 200
+	when
+		Mata($y : victima)
+		$v : Personaje(nombre == $y, vivo == true)
+	then
+		modify($v) { setVivo(false) };
 end
 
 // =====================================================================

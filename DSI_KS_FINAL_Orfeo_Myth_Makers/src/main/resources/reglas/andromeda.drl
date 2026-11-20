@@ -1,6 +1,10 @@
 // =====================================================================
 // andromeda.drl  -  Escenario F2-1: el mito de la liberacion de Andromeda
 // Reglas especificas del mito de Perseo (las genericas estan en base.drl)
+//
+//Cambios relevantes:
+//Se piden capacidades no objetos concretos
+//Las muertes solo insertan Mata, en base.drl ya se gestiona que la victima muera, que se hereden los objetos y que los presos queden libres
 // =====================================================================
 package reglas
 
@@ -15,6 +19,7 @@ rule "Hefesto convierte el EscudoBronce en EscudoEspejo"
         $p : Posee(poseedor == $nh, objeto == "EscudoBronce")
     then
         delete($p);
+        insert(new Proteccion("EscudoEspejo"));
         insert(new Posee($nh, "EscudoEspejo"));
         insert(new Suceso($nh + " obtiene EscudoEspejo debido a tener el favor de Hefesto y el EscudoBronce"));
 end
@@ -84,26 +89,55 @@ rule "Matar a Medusa"
         TieneCapacidad(personaje == $nh, capacidad == "Vuelo")
         TieneCapacidad(personaje == $nh, capacidad == "Invisibilidad")
         TieneCapacidad(personaje == $nh, capacidad == "Espejo")
+        TieneCapacidad(personaje == $nh, capacidad == "ContieneMagia")
         Posee(poseedor == $nh, $a : objeto)
         Arma(nombre == $a)
-        Posee(poseedor == $nh, objeto == "ZurronMagico")
+        not Mata(victima == "Medusa")
     then
-        modify($m) { setVivo(false) };
         insert(new Mata($nh, "Medusa"));
         insert(new Suceso($nh + " mata a Medusa debido a tener " + $a
-            + ", Espejo, Invisibilidad, Vuelo y ZurronMagico para guardar la cabeza"));
+            + ", Espejo, Invisibilidad, Vuelo y ContieneMagia para guardar la cabeza"));
 end
 
-// Sin zurron magico, la cabeza de Medusa petrifica a quien la lleva
-rule "La cabeza de Medusa petrifica a quien no tiene zurron"
+//Tras Morir Medusa Nace Pegaso
+rule "Nace Pegaso al morir Medusa"
+	agenda-group "mitos"
+	when
+		Mata($x : asesino, victima == "Medusa")
+		not Criatura(nombre == "Pegaso")
+	then
+		insert(new Criatura("Pegaso"));
+		insert(new Suceso("Nace Pegaso debido a la muerte de Medusa a manos de " + $x ));
+end
+
+//Con la Capacidad de Domar se puede domar a Pegaso y obtener vuelo
+//Pegaso queda preso de quien lo dome
+rule "Domar a Pegaso"
+		agenda-group "mitos"
+		when
+			$h : Heroe ($nh : nombre, vivo == true, libre == true)
+			TieneCapacidad(personaje == $nh, capacidad == "Domar")
+			$p : Criatura (nombre == "Pegaso", vivo == true, libre == true)
+			not TieneCapacidad(personaje == $nh, capacidad == "Vuelo")
+		then
+			modify($p) { setLibre(false); }
+			insert(new PresoDe("Pegaso", $nh));
+			insert(new TieneCapacidad($nh, "Vuelo"));
+			insert(new Suceso($nh + " doma a Pegaso y obtiene la capacidad de Vuelo debido a tener la capacidad Domar"));
+end
+
+
+// Sin ContieneMagia, la cabeza de Medusa petrifica a quien la lleva
+rule "La cabeza de Medusa petrifica a quien no tiene ContieneMagia"
     agenda-group "mitos"
+    salience -5
     when
         $h : Personaje($nh : nombre, vivo == true, this instanceof Heroe || this instanceof Mortal)
         Posee(poseedor == $nh, objeto == "CabezaMedusa")
-        not Posee(poseedor == $nh, objeto == "ZurronMagico")
+        not TieneCapacidad(personaje == $nh, capacidad == "ContieneMagia")
     then
         modify($h) { setVivo(false) };
-        insert(new Suceso($nh + " muere petrificado debido a llevar CabezaMedusa sin ZurronMagico"));
+        insert(new Suceso($nh + " muere petrificado debido a llevar CabezaMedusa sin contieneMagia"));
 end
 
 // Matar a la criatura marina (Ceto, Kraken...) que tiene a alguien preso:
@@ -116,8 +150,8 @@ rule "Petrificar a la criatura captora"
         PresoDe(captor == $nc)
         TieneCapacidad(personaje == $nh, capacidad == "Petrificar")
         TieneCapacidad(personaje == $nh, capacidad == "Vuelo")
+        not Mata(victima == $nc)
     then
-        modify($c) { setVivo(false) };
         insert(new Mata($nh, $nc));
-        insert(new Suceso($nh + " mata a " + $nc + " debido a tener CabezaMedusa (Petrificar) y Vuelo"));
+        insert(new Suceso($nh + " mata a " + $nc + " debido a tener Petrificar y Vuelo"));
 end
