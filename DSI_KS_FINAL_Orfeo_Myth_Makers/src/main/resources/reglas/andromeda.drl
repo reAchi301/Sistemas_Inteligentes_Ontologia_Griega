@@ -14,7 +14,7 @@ import mitologia.modelo.*
 rule "Hefesto convierte el EscudoBronce en EscudoEspejo"
     agenda-group "mitos"
     when
-        $h : Heroe($nh : nombre, vivo == true)
+        $h : Heroe($nh : nombre, vivo == true, libre == true)
         TieneFavor(personaje == $nh, dios == "Hefesto")
         $p : Posee(poseedor == $nh, objeto == "EscudoBronce")
     then
@@ -28,7 +28,7 @@ end
 rule "Localizar a las Grayas"
     agenda-group "mitos"
     when
-        $h : Heroe($nh : nombre, vivo == true)
+        $h : Heroe($nh : nombre, vivo == true, libre == true)
         TieneFavor(personaje == $nh, dios == "Hermes")
         TieneFavor(personaje == $nh, dios == "Atenea")
         not Localiza(personaje == $nh, localizado == "Grayas")
@@ -41,7 +41,7 @@ end
 rule "Robar el ojo de las Grayas"
     agenda-group "mitos"
     when
-        $h : Heroe($nh : nombre, vivo == true)
+        $h : Heroe($nh : nombre, vivo == true, libre == true)
         Localiza(personaje == $nh, localizado == "Grayas")
         TieneCapacidad(personaje == $nh, capacidad == "Invisibilidad")
         $p : Posee(poseedor == "Grayas", objeto == "OjoGrayas")
@@ -56,7 +56,7 @@ end
 rule "Intercambiar el ojo por la localizacion de las Ninfas"
     agenda-group "mitos"
     when
-        $h : Heroe($nh : nombre, vivo == true)
+        $h : Heroe($nh : nombre, vivo == true, libre == true)
         $p : Posee(poseedor == $nh, objeto == "OjoGrayas")
         not Localiza(personaje == $nh, localizado == "Ninfas")
     then
@@ -70,7 +70,7 @@ end
 rule "Las Ninfas entregan sus objetos"
     agenda-group "mitos"
     when
-        $h : Heroe($nh : nombre, vivo == true)
+        $h : Heroe($nh : nombre, vivo == true, libre == true)
         Localiza(personaje == $nh, localizado == "Ninfas")
         $p : Posee(poseedor == "Ninfas", $o : objeto)
     then
@@ -84,7 +84,7 @@ end
 rule "Matar a Medusa"
     agenda-group "mitos"
     when
-        $h : Heroe($nh : nombre, vivo == true)
+        $h : Heroe($nh : nombre, vivo == true, libre == true)
         $m : Criatura(nombre == "Medusa", vivo == true)
         TieneCapacidad(personaje == $nh, capacidad == "Vuelo")
         TieneCapacidad(personaje == $nh, capacidad == "Invisibilidad")
@@ -145,7 +145,7 @@ end
 rule "Petrificar a la criatura captora"
     agenda-group "mitos"
     when
-        $h : Personaje($nh : nombre, vivo == true, this instanceof Heroe || this instanceof Mortal)
+        $h : Personaje($nh : nombre, vivo == true, libre == true, this instanceof Heroe || this instanceof Mortal)
         $c : Criatura($nc : nombre, vivo == true, nombre != "Medusa")
         PresoDe(captor == $nc)
         TieneCapacidad(personaje == $nh, capacidad == "Petrificar")

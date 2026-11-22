@@ -2,7 +2,7 @@
 // base.drl  -  Conocimiento por defecto y reglas COMUNES a todos los mitos
 // (todo el equipo usa este fichero; cada escenario anade su propio .drl)
 //
-//Modificaciones m�s relevantes:
+//Modificaciones más relevantes:
 //En la base de hechos solo existe lo que empieza en cada historia,
 // los hechos que se crean (nacimiento del Minotauro, LaberintoCreta, etc) lo insertan las reglas correspondientes.
 //Favor/Enojo y ayuda: quien concede uno borra a su contrario (no se puede tener favor y enojo)
@@ -135,7 +135,7 @@ rule "Conocimiento inicial por defecto"
         insert(new Capacidad("Orientacion"));
         insert(new Capacidad("FuerzaSemiDios"));
         
-        //Cambiado TransportarCabezaMedusa por ContieneMagia para que sea m�s general
+        //Cambiado TransportarCabezaMedusa por ContieneMagia para que sea más general
         insert(new Capacidad("ContieneMagia"));
         insert(new Capacidad("Engano"));
         insert(new Capacidad("Domar"));
@@ -321,7 +321,7 @@ end
 rule "Dios entrega objeto a quien tiene su favor"
     agenda-group "mitos"
     when
-        $h : Heroe($nh : nombre, vivo == true)
+        $h : Heroe($nh : nombre, vivo == true, libre == true)
         TieneFavor(personaje == $nh, $d : dios)
         Dios(nombre == $d)
         $p : Posee(poseedor == $d, $o : objeto)
@@ -360,6 +360,7 @@ end
 // Si muere el captor, su preso queda libre
 rule "Matar al captor libera al preso"
     agenda-group "mitos"
+    salience 100
     when
         Mata($x : asesino, $y : victima)
         $pd : PresoDe($z : preso, captor == $y)
