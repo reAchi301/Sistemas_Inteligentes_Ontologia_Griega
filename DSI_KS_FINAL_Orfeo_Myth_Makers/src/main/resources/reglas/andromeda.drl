@@ -155,3 +155,16 @@ rule "Petrificar a la criatura captora"
         insert(new Mata($nh, $nc));
         insert(new Suceso($nh + " mata a " + $nc + " debido a tener Petrificar y Vuelo"));
 end
+
+rule "Un semidios mata a Medusa con sus manos"
+    agenda-group "mitos"
+    when
+        $h : Heroe($nh : nombre, vivo == true, libre == true)
+        TieneCapacidad(personaje == $nh, capacidad == "FuerzaSemiDios")
+        TieneCapacidad(personaje == $nh, capacidad == "Vuelo")
+        Criatura(nombre == "Medusa", vivo == true)
+        not Mata(victima == "Medusa")
+    then
+        insert(new Mata($nh, "Medusa"));
+        insert(new Suceso($nh + " mata a Medusa debido a tener la capacidad FuerzaSemiDios y Vuelo"));
+end

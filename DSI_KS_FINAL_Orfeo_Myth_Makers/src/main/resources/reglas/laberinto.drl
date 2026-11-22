@@ -265,6 +265,7 @@ rule "Sin Orientacion el Minotauro apresa al que entra"
         not TieneCapacidad(personaje == $x, capacidad == "Orientacion")
         not Posee(poseedor == $x, objeto == "HiloAriadna")
         not PresoDe(preso == $x)
+        not TieneCapacidad(personaje == $x, capacidad == "FuerzaSemiDios")
     then
         modify($v) { setLibre(false) };
         insert(new PresoDe($x, "Minotauro"));
@@ -505,4 +506,18 @@ rule "Un heroe armado mata al heroe que le ha enojado"
     then
         insert(new Mata($a, $b));
         insert(new Suceso($a + " mata a " + $b + " debido a tener " + $arma + " y el enojo hacia " + $b));
+end
+
+rule "Un semidios mata al Minotauro con sus manos"
+    agenda-group "mitos"
+    salience 30
+    when
+        En($x : personaje, lugar == "LaberintoCreta")
+        Personaje(nombre == $x, vivo == true, libre == true, this instanceof Heroe)
+        TieneCapacidad(personaje == $x, capacidad == "FuerzaSemiDios")
+        Criatura(nombre == "Minotauro", vivo == true)
+        not Mata(victima == "Minotauro")
+    then
+        insert(new Mata($x, "Minotauro"));
+        insert(new Suceso($x + " mata a Minotauro debido a tener la capacidad FuerzaSemiDios y estar en LaberintoCreta"));
 end

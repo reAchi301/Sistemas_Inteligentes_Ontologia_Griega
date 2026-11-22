@@ -2,7 +2,7 @@
 // base.drl  -  Conocimiento por defecto y reglas COMUNES a todos los mitos
 // (todo el equipo usa este fichero; cada escenario anade su propio .drl)
 //
-//Modificaciones más relevantes:
+//Modificaciones mï¿½s relevantes:
 //En la base de hechos solo existe lo que empieza en cada historia,
 // los hechos que se crean (nacimiento del Minotauro, LaberintoCreta, etc) lo insertan las reglas correspondientes.
 //Favor/Enojo y ayuda: quien concede uno borra a su contrario (no se puede tener favor y enojo)
@@ -133,8 +133,9 @@ rule "Conocimiento inicial por defecto"
         insert(new Capacidad("Espejo"));
         insert(new Capacidad("Petrificar"));
         insert(new Capacidad("Orientacion"));
+        insert(new Capacidad("FuerzaSemiDios"));
         
-        //Cambiado TransportarCabezaMedusa por ContieneMagia para que sea más general
+        //Cambiado TransportarCabezaMedusa por ContieneMagia para que sea mï¿½s general
         insert(new Capacidad("ContieneMagia"));
         insert(new Capacidad("Engano"));
         insert(new Capacidad("Domar"));
@@ -188,6 +189,9 @@ rule "Conocimiento inicial por defecto"
         insert(new Posee("SerpienteDosCabezas", "CabezaSerpiente"));
 
         // ---- Relaciones iniciales ----
+        insert(new TieneCapacidad("Heracles", "FuerzaSemiDios"));
+        insert(new TieneFavor("Heracles", "Zeus"));
+        
         insert(new PresoDe("Ceto", "Poseidon"));      // Poseidon tiene encerrada a Ceto
         insert(new HijoDe("Andromeda", "Casiopea"));
         insert(new HijoDe("Andromeda", "Cefeo"));
@@ -330,6 +334,7 @@ end
 // Tener un objeto da la capacidad que ese objeto otorga
 rule "Objeto otorga capacidad"
     agenda-group "mitos"
+    salience 150
     when
         $p : Personaje($np : nombre, vivo == true, this instanceof Heroe || this instanceof Mortal)
         Posee(poseedor == $np, $o : objeto)
