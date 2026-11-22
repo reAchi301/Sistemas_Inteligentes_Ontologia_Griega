@@ -41,10 +41,18 @@
 	(otorgaCapacidad [Domar])
 	(poseidoPor [Hefesto]))
 
+([CabezaCeto] of  Trofeo
+
+	(poseidoPor [Ceto]))
+
 ([CabezaMedusa] of  Trofeo
 
 	(otorgaCapacidad [Petrificar])
 	(poseidoPor [Medusa]))
+
+([CabezaMinotauro] of  Trofeo
+
+	(poseidoPor [Minotauro]))
 
 ([CascoHades] of  Magico
 
@@ -66,15 +74,19 @@
 
 ([Ceto] of  Criatura
 
+	(ayudaA [Poseidon])
 	(estadoLibre FALSE)
 	(estadoVivo TRUE)
+	(poseeObjeto [CabezaCeto])
 	(presoDe [Poseidon])
-	(tieneFavor [Poseidon])
 	(ubicadoEn [CostaEtiopia]))
 
 ([ConjuroVuelo] of  Magico
 
 	(otorgaCapacidad [Vuelo]))
+
+([ContieneMagia] of  Capacidad
+)
 
 ([CostaEtiopia] of  Lugar
 
@@ -82,14 +94,30 @@
 		[Ceto]
 		[Andromeda]))
 
+([Creta] of  Lugar
+
+	(contieneA
+		[Dedalo]
+		[Icaro]
+		[Pasifae]))
+
 ([CuernoMinotauro] of  Arma
 
 	(poseidoPor [Minotauro]))
 
 ([Dedalo] of  Mortal
 
+	(ayudaA
+		[Minos]
+		[Pasifae]
+		[Icaro])
 	(estadoLibre TRUE)
-	(estadoVivo TRUE))
+	(estadoVivo TRUE)
+	(ubicadoEn [Creta]))
+
+([DisfrazVaca] of  Magico
+
+	(otorgaCapacidad [Engano]))
 
 ([Domar] of  Capacidad
 )
@@ -99,16 +127,20 @@
 	(estadoLibre TRUE)
 	(estadoVivo TRUE))
 
+([Engano] of  Capacidad
+)
+
 ([EscudoBronce] of  Proteccion
 
 	(poseidoPor [Atenea]))
 
-([EscudoEspejo] of  Proteccion
-
-	(otorgaCapacidad [Espejo]))
-
 ([EspadaIndestructible] of  Arma
-)
+
+	(poseidoPor [Hefesto]))
+
+([EspadaRey] of  Arma
+
+	(poseidoPor [Minos]))
 
 ([EspadaTeseo] of  Arma
 
@@ -117,7 +149,7 @@
 ([Espejo] of  Capacidad
 )
 
-([EspejoMano] of  Proteccion
+([EspejoMano] of  Magico
 
 	(otorgaCapacidad [Espejo]))
 
@@ -137,7 +169,9 @@
 
 	(estadoLibre TRUE)
 	(estadoVivo TRUE)
-	(poseeObjeto [BridaOro]))
+	(poseeObjeto
+		[BridaOro]
+		[EspadaIndestructible]))
 
 ([Heracles] of  Heroe
 
@@ -164,7 +198,9 @@
 
 	(estadoLibre TRUE)
 	(estadoVivo TRUE)
-	(hijoDe [Dedalo]))
+	(hijoDe [Dedalo])
+	(tieneAyuda [Dedalo])
+	(ubicadoEn [Creta]))
 
 ([Invisibilidad] of  Capacidad
 )
@@ -195,13 +231,20 @@
 
 	(estadoLibre TRUE)
 	(estadoVivo TRUE)
+	(poseeObjeto [EspadaRey])
+	(tieneAyuda [Dedalo])
 	(tienePreso [Minotauro]))
 
 ([Minotauro] of  Criatura
 
 	(estadoLibre FALSE)
 	(estadoVivo TRUE)
-	(poseeObjeto [CuernoMinotauro])
+	(hijoDe
+		[Pasifae]
+		[ToroMar])
+	(poseeObjeto
+		[CuernoMinotauro]
+		[CabezaMinotauro])
 	(presoDe [Minos])
 	(ubicadoEn [LaberintoCreta]))
 
@@ -239,7 +282,7 @@
 		[SandaliasAladas]
 		[ZurronMagico]))
 
-([OjoGrayas] of  Objeto
+([OjoGrayas] of  Trofeo
 
 	(poseidoPor [Grayas]))
 
@@ -251,8 +294,11 @@
 
 ([Pasifae] of  Mortal
 
+	(enamoradoDe [ToroMar])
 	(estadoLibre TRUE)
-	(estadoVivo TRUE))
+	(estadoVivo TRUE)
+	(tieneAyuda [Dedalo])
+	(ubicadoEn [Creta]))
 
 ([Pegaso] of  Criatura
 
@@ -275,6 +321,7 @@
 
 	(estadoLibre TRUE)
 	(estadoVivo TRUE)
+	(tieneAyuda [Ceto])
 	(tienePreso [Ceto]))
 
 ([SandaliasAladas] of  Magico
@@ -288,8 +335,20 @@
 	(estadoVivo TRUE)
 	(poseeObjeto [EspadaTeseo]))
 
-([TransportarCabezaMedusa] of  Capacidad
-)
+([ToroBlanco] of  Criatura
+
+	(estadoLibre TRUE)
+	(estadoVivo TRUE))
+
+([ToroMar] of  Criatura
+
+	(estadoLibre TRUE)
+	(estadoVivo TRUE))
+
+([ToroMinos] of  Criatura
+
+	(estadoLibre TRUE)
+	(estadoVivo TRUE))
 
 ([Vuelo] of  Capacidad
 )
@@ -301,5 +360,6 @@
 
 ([ZurronMagico] of  Magico
 
-	(otorgaCapacidad [TransportarCabezaMedusa])
+	(otorgaCapacidad [ContieneMagia])
 	(poseidoPor [Ninfas]))
+

@@ -19,6 +19,23 @@
 ;+		(allowed-classes Lugar)
 ;+		(cardinality 0 1)
 		(create-accessor read-write))
+	(multislot tieneAyuda
+;+		(comment "Personajes (no dioses) que prestan ayuda a este personaje")
+		(type INSTANCE)
+;+		(allowed-classes Personaje)
+;+		(inverse-slot ayudaA)
+		(create-accessor read-write))
+	(multislot ayudaA
+;+		(comment "Personajes a los que este personaje presta ayuda")
+		(type INSTANCE)
+;+		(allowed-classes Personaje)
+;+		(inverse-slot tieneAyuda)
+		(create-accessor read-write))
+	(multislot enamoradoDe
+;+		(comment "Personaje del que esta enamorado")
+		(type INSTANCE)
+;+		(allowed-classes Personaje)
+		(create-accessor read-write))
 	(multislot tieneFavor
 ;+		(comment "Define un personaje con la bendición/favor de un Dios")
 		(type INSTANCE)
@@ -111,7 +128,7 @@
 ;+		(inverse-slot ubicadoEn)
 		(create-accessor read-write)))
 
-(defclass Entidad "Agrupa los elementos fíısicos y personajes del dominio"
+(defclass Entidad "Agrupa los elementos físicos y personajes del dominio"
 	(is-a USER)
 	(role abstract)
 	(single-slot ubicadoEn
@@ -176,6 +193,21 @@
 ;+		(allowed-classes Personaje)
 ;+		(cardinality 0 1)
 		(create-accessor read-write))
+	(multislot tieneAyuda
+;+		(comment "Personajes (no dioses) que prestan ayuda a este personaje")
+		(type INSTANCE)
+;+		(allowed-classes Personaje)
+		(create-accessor read-write))
+	(multislot ayudaA
+;+		(comment "Personajes a los que este personaje presta ayuda")
+		(type INSTANCE)
+;+		(allowed-classes Personaje)
+		(create-accessor read-write))
+	(multislot enamoradoDe
+;+		(comment "Personaje del que esta enamorado")
+		(type INSTANCE)
+;+		(allowed-classes Personaje)
+		(create-accessor read-write))
 	(multislot tieneFavor
 ;+		(comment "Define un personaje con la bendición/favor de un Dios")
 		(type INSTANCE)
@@ -194,11 +226,11 @@
 	(is-a Personaje)
 	(role concrete))
 
-(defclass Mortal "Instancias: Andromeda, Casiopea, Cefeo, Minos, Ariadna, Dedalo, Icaro."
+(defclass Mortal "Instancias: Andromeda, Casiopea, Cefeo, Minos, Ariadna, Dedalo, Icaro, Pasifae."
 	(is-a Personaje)
 	(role concrete))
 
-(defclass Criatura "Enemigos o monstruos. Instancias: Ceto, Kraken, Medusa, Minotauro, Pegaso."
+(defclass Criatura "Enemigos o monstruos. Instancias: Ceto, Kraken, Medusa, Minotauro, Pegaso, ToroBlanco, ToroMinos, ToroMar."
 	(is-a Personaje)
 	(role concrete))
 
@@ -221,15 +253,15 @@
 ;+		(allowed-classes Capacidad)
 		(create-accessor read-write)))
 
-(defclass Arma "Instancias: HozAcero, EspadaIndestructible, EspadaTeseo, CuernoMinotauro."
+(defclass Arma "Instancias: HozAcero, EspadaIndestructible, EspadaTeseo, EspadaRey, CuernoMinotauro."
 	(is-a Objeto)
 	(role concrete))
 
-(defclass Proteccion "Instancias: EscudoBronce, EscudoEspejo, EspejoMano."
+(defclass Proteccion "Instancias: EscudoBronce."
 	(is-a Objeto)
 	(role concrete))
 
-(defclass Magico "Instancias: CascoHades, SandaliasAladas, ZurronMagico, HiloAriadna, BridaOro, AnilloInvisibilidad, ConjuroVuelo, AlasDedalo, AlasIcaro."
+(defclass Magico "Instancias: CascoHades, SandaliasAladas, ZurronMagico, HiloAriadna, BridaOro, AnilloInvisibilidad, ConjuroVuelo, AlasDedalo, AlasIcaro, EspejoMano, DisfrazVaca."
 	(is-a Objeto)
 	(role concrete)
 	(multislot otorgaCapacidad
@@ -239,11 +271,11 @@
 		(cardinality 1 ?VARIABLE)
 		(create-accessor read-write)))
 
-(defclass Trofeo "Restos obtenidos tras matar a una criatura (ej. CabezaMedusa)."
+(defclass Trofeo "Restos obtenidos tras matar a una criatura (CabezaMedusa, CabezaCeto, CabezaMinotauro, OjoGrayas)."
 	(is-a Objeto)
 	(role concrete))
 
-(defclass Lugar "Agrupa ubicaciones (ej. LaberintoCreta, Olimpo)."
+(defclass Lugar "Agrupa ubicaciones (Creta, LaberintoCreta, CostaEtiopia, Olimpo)."
 	(is-a USER)
 	(role concrete)
 	(multislot contieneA
