@@ -28,7 +28,7 @@ import mitologia.modelo.Suceso;
  */
 public class Main {
 
-    private static final Pattern NOMBRE_ESCENARIO = Pattern.compile("EscenarioF(\\d+)-(\\d+)\\.txt");
+    private static final Pattern NOMBRE_ESCENARIO = Pattern.compile("(?i)Escenario.?F(\\d+)[-_](\\d+)\\.txt");
 
     public static void main(String[] args) throws IOException {
         String escenarios = "escenarios";
@@ -49,17 +49,27 @@ public class Main {
         }
     }
 
+     /**Modificado para que muestre los escenarios en orden 1-n */
     private static List<Path> buscarEscenarios(Path directorio) throws IOException {
         List<Path> lista = new ArrayList<Path>();
-        try (DirectoryStream<Path> ds = Files.newDirectoryStream(directorio, "EscenarioF*-*.txt")) {
+        try (DirectoryStream<Path> ds = Files.newDirectoryStream(directorio, "*.txt")) {
             for (Path p : ds) {
                 if (NOMBRE_ESCENARIO.matcher(p.getFileName().toString()).matches()) lista.add(p);
             }
         }
         Collections.sort(lista, new Comparator<Path>() {
-            public int compare(Path a, Path b) { return a.getFileName().toString().compareTo(b.getFileName().toString()); }
+        	public int compare(Path a, Path b) {
+                int c = Integer.compare(clave(a, 1), clave(b, 1));
+                return c != 0 ? c : Integer.compare(clave(a, 2), clave(b, 2));
+            }
         });
         return lista;
+    }
+    
+    private static int clave(Path p, int grupo) {
+    	Matcher m = NOMBRE_ESCENARIO.matcher(p.getFileName().toString());
+    	m.matches();
+    	return Integer.parseInt(m.group(grupo));
     }
 
     private static void ejecutarEscenario(KieContainer kContainer, Path fichero, Path salida, String id)

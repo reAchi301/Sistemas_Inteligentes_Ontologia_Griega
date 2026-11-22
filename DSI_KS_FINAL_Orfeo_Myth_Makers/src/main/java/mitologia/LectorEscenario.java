@@ -1,6 +1,7 @@
 package mitologia;
 
 import java.io.IOException;
+
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.text.Normalizer;
 
 import mitologia.modelo.HijoDe;
 import mitologia.modelo.Localiza;
@@ -34,18 +36,18 @@ public class LectorEscenario {
             "de", "del", "la", "las", "el", "los", "a", "al"));
 
     // Pregunta
-    private static final Pattern P_ACCION = Pattern.compile("(?i)^puede (.+?) (liberar|matar|apresar) a (.+)$");
+    private static final Pattern P_ACCION = Pattern.compile("(?i)^puede (.+?) (liberar|matar|apresar) (?:a las|a los|a la|al|a) (.+)$");
     private static final Pattern P_OBTENER = Pattern.compile("(?i)^puede (.+?) (?:obtener|conseguir) (.+)$");
-    private static final Pattern P_TENER_CAP = Pattern.compile("(?i)^puede (.+?) tener la capacidad de (.+)$");
+    private static final Pattern P_TENER_CAP = Pattern.compile("(?i)^puede (.+?) tener la capacidad (?:de )?(.+)$");
     // Condiciones (el orden importa: de la mas especifica a la mas general)
     private static final Pattern P_FAVOR = Pattern.compile("(?i)^(.+?) tiene el favor de (.+)$");
     private static final Pattern P_ENOJO = Pattern.compile("(?i)^(.+?) tiene el enojo de (.+)$");
-    private static final Pattern P_CAPACIDAD = Pattern.compile("(?i)^(.+?) tiene la capacidad (?:de )?(.+)$");
-    private static final Pattern P_NO_TIENE = Pattern.compile("(?i)^(.+?) no tiene (.+)$");
-    private static final Pattern P_LOCALIZA = Pattern.compile("(?i)^(.+?) localiza a (.+)$");
+    private static final Pattern P_CAPACIDAD = Pattern.compile("(?i)^(.+?) (?:tiene|posee) la capacidad (?:de )?(.+)$");
+    private static final Pattern P_NO_TIENE = Pattern.compile("(?i)^(.+?) no (?:tiene|posee) (.+)$");
+    private static final Pattern P_LOCALIZA = Pattern.compile("(?i)^(.+?) localiza (?:a las|a los|a la|al|a) (.+)$");
     private static final Pattern P_PRESO = Pattern.compile("(?i)^(.+?) (?:es|esta) pres[oa] de (.+)$");
     private static final Pattern P_HIJO = Pattern.compile("(?i)^(.+?) es hij[oa] de (.+)$");
-    private static final Pattern P_TIENE = Pattern.compile("(?i)^(.+?) tiene (.+)$");
+    private static final Pattern P_TIENE = Pattern.compile("(?i)^(.+?) (?:tiene|posee) (.+)$");
 
     private final List<Object> hechos = new ArrayList<Object>();
     private final List<String> lineasNoEntendidas = new ArrayList<String>();
@@ -60,9 +62,18 @@ public class LectorEscenario {
         }
         textoOriginal = sb.toString();
     }
+    
+    /**
+     * Quita acentos y enes: "Andromeda" -> "Andromeda".
+     * */
+    static String normalizar(String texto) {
+    	String s = texto.replace("\uFEFF", "").replace("\u00BF", "").replace("?", "");
+    	s = Normalizer.normalize(s, Normalizer.Form.NFD).replaceAll("\\p{M}+", "");
+    	return s.trim();
+    }
 
     private void procesarLinea(String linea) {
-        String l = linea.replace("¿", "").replace("?", "").trim();
+        String l = normalizar(linea);
         if (l.endsWith(".")) l = l.substring(0, l.length() - 1).trim();
         if (l.isEmpty() || l.toLowerCase().startsWith("condiciones")) return;
 

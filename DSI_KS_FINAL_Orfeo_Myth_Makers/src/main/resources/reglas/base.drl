@@ -39,15 +39,27 @@ rule "Conocimiento inicial por defecto"
         insert(new Dios("Hades"));
         insert(new Dios("Hefesto"));
         insert(new Dios("Poseidon"));
+        
+        //Mito Orfeo
+        insert(new Dios("Persefone"));
+        
         // ---- Seres divinos (dioses menores) ----
         insert(new SerDivino("Grayas"));
         insert(new SerDivino("Ninfas"));
         insert(new SerDivino("Nereidas"));
         insert(new SerDivino("Doris"));
+        
+        //Mito Orfeo
+        insert(new SerDivino("Caronte"));
+        
         // ---- Heroes ----
         insert(new Heroe("Perseo"));
         insert(new Heroe("Teseo"));
         insert(new Heroe("Heracles"));
+        
+        //Mito Orfeo
+        insert(new Heroe("Orfeo"));
+        
         // ---- Mortales ----
         insert(new Mortal("Andromeda"));
         insert(new Mortal("Casiopea"));
@@ -57,6 +69,12 @@ rule "Conocimiento inicial por defecto"
         insert(new Mortal("Dedalo"));
         insert(new Mortal("Icaro"));
         insert(new Mortal("Pasifae"));
+        
+        //Mito Orfeo
+        insert(new Mortal("Euridice"));
+        insert(new Mortal("Aristeo"));
+        
+        
         // ---- Criaturas ----
        // Criatura ceto = new Criatura("Ceto");
        // ceto.setLibre(false);                       // Ceto empieza encerrada por Poseidon
@@ -68,8 +86,19 @@ rule "Conocimiento inicial por defecto"
         insert(new Criatura("ToroMinos"));
         insert(new Criatura("ToroMar"));
         
+        //Mito Orfeo
+        insert(new Criatura("SerpienteDosCabezas"));
+        insert(new Criatura("Cerbero"));
+        
+        
         // ---- Lugares ----
         insert(new Lugar("Creta"));
+        
+        //Mito Orfeo
+        insert(new Lugar("BosqueTracia"));
+        insert(new Lugar("Prado"));
+        insert(new Lugar("RioEstiga"));
+        insert(new Lugar("ReinoSombras"));
 
         // ---- Objetos ----
         insert(new Arma("HozAcero"));
@@ -85,20 +114,34 @@ rule "Conocimiento inicial por defecto"
         insert(new Magico("BridaOro"));
         insert(new Magico("AnilloInvisibilidad"));
         insert(new Magico("ConjuroVuelo"));
+        
+        //Mito Orfeo
+        insert(new Magico("LiraApolo"));
+        insert(new Magico("BarcoDeLosMuertos"));
+        
         insert(new Trofeo("OjoGrayas"));
         insert(new Trofeo("CabezaMedusa"));
         insert(new Trofeo("CabezaCeto"));
-
+		
+		//Mito Orfeo
+		insert(new Trofeo("CorazonHades"));
+		insert(new Trofeo("CabezaSerpiente"));
+		
         // ---- Capacidades ----
         insert(new Capacidad("Vuelo"));
         insert(new Capacidad("Invisibilidad"));
         insert(new Capacidad("Espejo"));
         insert(new Capacidad("Petrificar"));
         insert(new Capacidad("Orientacion"));
+        
         //Cambiado TransportarCabezaMedusa por ContieneMagia para que sea más general
         insert(new Capacidad("ContieneMagia"));
         insert(new Capacidad("Engano"));
         insert(new Capacidad("Domar"));
+        
+        //Mito Orfeo
+        insert(new Capacidad("Musical"));
+        insert(new Capacidad("Navegar"));
 
         // ---- Que capacidad da cada objeto (slot otorgaCapacidad) ----
         insert(new Otorga("SandaliasAladas", "Vuelo"));
@@ -113,7 +156,14 @@ rule "Conocimiento inicial por defecto"
         insert(new Otorga("HiloAriadna", "Orientacion"));
         insert(new Otorga("ZurronMagico", "ContieneMagia")); // guarda la cabeza de Medusa sin petrificar
         insert(new Otorga("BridaOro", "Domar"));   // la brida de oro doma a Pegaso
-        insert(new Otorga("DisfrazVaca", "Engano"));                    
+        insert(new Otorga("DisfrazVaca", "Engano"));    
+        
+         //Mito Orfeo
+        insert(new Otorga("LiraApolo", "Musical"));                
+        insert(new Otorga("LiraApolo", "Domar"));
+        insert(new Otorga("BarcoDeLosMuertos", "Navegar"));
+        insert(new Otorga("BarcoDeLosMuertos", "ContieneMagia"));
+         
 
         // ---- Quien tiene cada objeto al empezar (slot poseeObjeto) ----
         insert(new Posee("Atenea", "EscudoBronce"));
@@ -130,6 +180,12 @@ rule "Conocimiento inicial por defecto"
         
         insert(new Posee("Medusa", "CabezaMedusa"));
         insert(new Posee("Ceto", "CabezaCeto"));
+        
+         //Mito Orfeo
+        insert(new Posee("Orfeo", "LiraApolo"));
+        insert(new Posee("Caronte", "BarcoDeLosMuertos"));
+        insert(new Posee("Hades", "CorazonHades"));
+        insert(new Posee("SerpienteDosCabezas", "CabezaSerpiente"));
 
         // ---- Relaciones iniciales ----
         insert(new PresoDe("Ceto", "Poseidon"));      // Poseidon tiene encerrada a Ceto
@@ -143,6 +199,15 @@ rule "Conocimiento inicial por defecto"
          insert(new TieneAyuda("Minos", "Dedalo"));
          insert(new TieneAyuda("Pasifae", "Dedalo"));
          insert(new TieneAyuda("Icaro", "Dedalo"));
+         
+          //Mito Orfeo
+         insert(new En("Euridice", "BosqueTracia"));
+         insert(new En("Aristeo", "BosqueTracia"));
+         insert(new En("Caronte", "RioEstiga"));
+         insert(new En("Cerbero", "ReinoSombras"));
+         insert(new En("Persefone", "ReinoSombras"));
+         insert(new En("Hades", "ReinoSombras"));
+         
 end
 
 // Una condicion "X no tiene O" del escenario quita el hecho por defecto

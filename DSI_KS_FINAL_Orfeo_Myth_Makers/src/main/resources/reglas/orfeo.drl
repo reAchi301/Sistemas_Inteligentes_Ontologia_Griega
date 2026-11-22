@@ -1,0 +1,276 @@
+//============================================================
+//Orfeo.drl - Mito de Orfeo - Escenario F2-8 (construye tu propio mito)
+// Apunte: El mito de orfeo en realidad es tragico, aqui lo hemos resumido 
+// y modificado para que tenga un final feliz
+// Como Inicia el Mito :
+// Cuando un Heroe o ser ubica el Bosque de Tracia empieza el mito
+//
+// Relato Generalizado:
+// Todo aquel que se haya enamorado ( y es correspondido / bidireccional) y 
+// pierde a su enamorado por la SerpienteDosCabezas deciende al inframundo a rescatarlo.
+// 
+// Capacidades Nuevas : Musical y Navegar
+//
+// El lugar de los enamorados se mantiene, así al cada uno terminar su travesía vuelven 
+// al lugar de origen (Creta, BosqueTracia, etc)
+//
+//============================================================
+
+package reglas
+
+import mitologia.modelo.*
+
+// Inicio. Orfeo llega al bosque 
+rule "Llegar al Bosque de Tracia"
+	agenda-group "mitos"
+	salience 100
+	when
+		Personaje($x : nombre, vivo == true, this instanceof Heroe || this instanceof Mortal)
+		$l : Localiza(personaje == $x, localizado == "BosqueTracia")
+		not En(personaje == $x, lugar == "BosqueTracia")
+	then
+		delete($l)
+		insert(new En($x, "BosqueTracia"));
+		insert(new Suceso($x + " llega a Bosque de Tracia debido a localizar BosqueTracia"));
+end
+
+// Orfeo se enamora de Euridice y Aristeo provoca que huya
+
+rule "Euridice se enamora del musico"
+	agenda-group "mitos"
+    salience 100
+    when
+        Personaje($x : nombre, vivo == true, this instanceof Heroe || this instanceof Mortal)
+        En(personaje == $x, lugar == "BosqueTracia")
+        TieneCapacidad(personaje == $x, capacidad == "Musical")
+        Mortal(nombre == "Euridice", vivo == true)
+        not Enamorado(persona == "Euridice", amado == $x)
+    then
+        insert(new Enamorado("Euridice", $x));
+        insert(new Enamorado($x, "Euridice"));
+        insert(new Suceso("Euridice se enamora de " + $x + " debido a tener " + $x + " la capacidad Musical en BosqueTracia"));
+end
+
+rule "Aristeo se obsesiona con Euridice"
+	agenda-group "mitos"
+    salience 100
+    when
+        Mortal(nombre == "Aristeo", vivo == true)
+        En(personaje == "Aristeo", $l : lugar)
+		En(personaje == "Euridice", lugar == $l)
+        Enamorado(persona == "Euridice", $a : amado, amado != "Aristeo")
+        not Enamorado(persona == "Aristeo", amado == "Euridice")
+    then
+        insert(new Enamorado("Aristeo", "Euridice"));
+        insert(new Suceso("Aristeo se obsesiona con Euridice debido a estar Euridice enamorada de " + $a));
+end
+
+rule "Euridice huye al Prado"
+	agenda-group "mitos"
+    salience 100
+    when
+        Enamorado(persona == "Aristeo", amado == "Euridice")
+        not Enamorado(persona == "Euridice", amado == "Aristeo")
+        $old : En(personaje == "Euridice", lugar == "BosqueTracia")
+        Mortal(nombre == "Euridice", vivo == true, libre == true)
+        not Mata(victima == "Euridice")
+        not Libera(liberado == "Euridice")
+    then
+        delete($old);
+        insert(new En("Euridice", "Prado"));
+        insert(new Suceso("Euridice huye al Prado debido a la obsesion de Aristeo"));
+end
+
+//Euridice muere y es presa de Hades
+rule "La serpiente mata a Euridice en el Prado"
+ 	agenda-group "mitos"
+    salience 100
+    when
+        Criatura(nombre == "SerpienteDosCabezas", vivo == true)
+        En(personaje == "Euridice", lugar == "Prado")
+        Mortal(nombre == "Euridice", vivo == true)
+        not Mata(victima == "Euridice")
+    then
+        insert(new Mata("SerpienteDosCabezas", "Euridice"));
+        insert(new Suceso("Euridice muere debido a ser atacada por SerpienteDosCabezas en el Prado"));
+end
+
+rule "El alma de la victima de la serpiente queda presa de Hades"
+	agenda-group "mitos"
+    salience 100
+    when
+        Mata(asesino == "SerpienteDosCabezas", $v : victima)
+        $p : Personaje(nombre == $v, vivo == false)
+        not PresoDe(preso == $v)
+    then
+        modify($p) { setLibre(false) };
+        insert(new PresoDe($v, "Hades"));
+        insert(new Suceso($v + " queda presa de Hades debido a morir por SerpienteDosCabezas"));
+end
+
+//Orfeo encuentra a Euridice y deciende al inframundo
+
+// Quien es correspondido y pierde a su amada por la serpiente va a buscarla al Prado
+// (conserva su lugar: alli volveran)
+rule "El enamorado va al Prado a buscar el cuerpo"
+    agenda-group "mitos"
+    salience 100
+    when
+        Mata(asesino == "SerpienteDosCabezas", $e : victima)
+        Personaje(nombre == $e, vivo == false)
+        Enamorado(persona == $e, $x : amado)
+        Enamorado(persona == $x, amado == $e)
+        Personaje(nombre == $x, vivo == true, libre == true, this instanceof Heroe || this instanceof Mortal)
+        En(personaje == $x)
+        not En(personaje == $x, lugar in ("Prado", "RioEstiga", "ReinoSombras"))
+    then
+        insert(new En($x, "Prado"));
+        insert(new Suceso($x + " encuentra el cuerpo de " + $e + " en el Prado debido a estar enamorado de " + $e));
+end
+
+rule "El enamorado deciende al inframundo"
+	agenda-group "mitos"
+    salience 100
+    when
+        $old : En($x : personaje, lugar == "Prado")
+        Personaje(nombre == $x, vivo == true, libre == true, this instanceof Heroe || this instanceof Mortal)
+        Enamorado(persona == $x, $e : amado)
+        Personaje(nombre == $e, vivo == false)
+        En(personaje == $e, lugar == "Prado")
+    then
+        delete($old);
+        insert(new En($x, "RioEstiga"));
+        insert(new Suceso($x + " desciende al inframundo y llega al RioEstiga debido a encontrar el cuerpo de " + $e));
+end
+
+// Caronte y el rio
+
+rule "Caronte ayuda al musico"
+  	agenda-group "mitos"
+    salience 100
+    when
+        Personaje($x : nombre, vivo == true, this instanceof Heroe || this instanceof Mortal)
+        En(personaje == $x, lugar == "RioEstiga")
+        TieneCapacidad(personaje == $x, capacidad == "Musical")
+        En(personaje == "Caronte", lugar == "RioEstiga")
+        not TieneAyuda(receptor == $x, ayudante == "Caronte")
+    then
+        insert(new TieneAyuda($x, "Caronte"));
+        insert(new Suceso($x + " obtiene la ayuda de Caronte debido a tener la capacidad Musical en RioEstiga"));
+end
+
+rule "Caronte entrefa el barco a quien tiene su ayuda"
+	agenda-group "mitos"
+    salience 100
+    when
+        TieneAyuda($x : receptor, ayudante == "Caronte")
+        $p : Posee(poseedor == "Caronte", objeto == "BarcoDeLosMuertos")
+    then
+        delete($p);
+        insert(new Posee($x, "BarcoDeLosMuertos"));
+        insert(new Suceso($x + " obtiene BarcoDeLosMuertos debido a tener la ayuda de Caronte"));
+end
+
+//Navegar Permite Cruzar el Estiga
+rule "Cruzar el Estiga hasta el Reino de las Sombras"
+ 	agenda-group "mitos"
+    salience 100
+    when
+        $old : En($x : personaje, lugar == "RioEstiga")
+        Personaje(nombre == $x, vivo == true, this instanceof Heroe || this instanceof Mortal)
+        TieneCapacidad(personaje == $x, capacidad == "Navegar")
+    then
+        delete($old);
+        insert(new En($x, "ReinoSombras"));
+        insert(new Suceso($x + " llega a ReinoSombras debido a tener la capacidad Navegar para cruzar RioEstiga"));
+end
+
+//Hay que Domar al Cerbero
+rule "Domar a Cerbero"
+    agenda-group "mitos"
+    salience 100
+    when
+        Personaje($x : nombre, vivo == true, this instanceof Heroe || this instanceof Mortal)
+        En(personaje == $x, lugar == "ReinoSombras")
+        TieneCapacidad(personaje == $x, capacidad == "Domar")
+        $c : Criatura(nombre == "Cerbero", vivo == true, libre == true)
+    then
+        modify($c) { setLibre(false) };
+        insert(new PresoDe("Cerbero", $x));
+        insert(new Suceso($x + " doma a Cerbero debido a tener la capacidad Domar en ReinoSombras"));
+end
+
+//La hazaña del heroe gana el favor de Persefone
+rule "Persefone da su favor l enamorado que toca"
+	agenda-group "mitos"
+    salience 100
+    when
+        Personaje($x : nombre, vivo == true, this instanceof Heroe || this instanceof Mortal)
+        En(personaje == $x, lugar == "ReinoSombras")
+        TieneCapacidad(personaje == $x, capacidad == "Musical")
+        PresoDe(preso == "Cerbero", captor == $x)
+        Enamorado(persona == $x, $e : amado)
+        PresoDe(preso == $e, captor == "Hades")
+        not TieneFavor(personaje == $x, dios == "Persefone")
+    then
+        insert(new TieneFavor($x, "Persefone"));
+        insert(new Suceso($x + " obtiene el favor de Persefone debido a tener la capacidad Musical y estar enamorado de " + $e
+            + " en ReinoSombras"));
+end
+
+//Hades libera al preso y lo devuelve a la vida
+rule "Hades libera y devuelve la vida a la enamorada"
+	agenda-group "mitos"
+    salience 100
+    when
+        TieneFavor($x : personaje, dios == "Persefone")
+        Enamorado(persona == $x, $e : amado)
+        $pd : PresoDe(preso == $e, captor == "Hades")
+        $p : Personaje(nombre == $e)
+        $oldE : En(personaje == $e)
+        $m : Mata(victima == $e)
+    then
+        delete($pd);
+        delete($oldE);
+        delete($m);
+        modify($p) { setVivo(true), setLibre(true) };
+        insert(new En($e, "ReinoSombras"));
+        insert(new Suceso("Hades libera a " + $e + " y le devuelve la vida debido a tener " + $x + " el favor de Persefone"));
+end
+
+rule "Hades entrega sus objetos a quien tiene el favor de Persefone"
+ 	agenda-group "mitos"
+    salience 100
+    when
+        Personaje($x : nombre, vivo == true, this instanceof Heroe || this instanceof Mortal)
+        TieneFavor(personaje == $x, dios == "Persefone")
+        $p : Posee(poseedor == "Hades", $o : objeto)
+    then
+        delete($p);
+        insert(new Posee($x, $o));
+        insert(new Suceso($x + " obtiene " + $o + " debido a tener el favor de Persefone"));
+end
+
+//El fin del mito, liberar al amado y volver al lugar original.
+rule "Huir del inframundo con la enamorada"
+    agenda-group "mitos"
+    salience 100
+    when
+        Personaje($x : nombre, vivo == true, libre == true, this instanceof Heroe || this instanceof Mortal)
+        $ex : En(personaje == $x, lugar == "ReinoSombras")
+        Enamorado(persona == $x, $e : amado)
+        Personaje(nombre == $e, vivo == true, libre == true)
+        $ee : En(personaje == $e, lugar == "ReinoSombras")
+        TieneCapacidad(personaje == $x, capacidad == "Navegar")
+        En(personaje == $x, lugar not in ("Prado", "RioEstiga", "ReinoSombras"), $o : lugar)
+        not Libera(liberador == $x, liberado == $e)
+    then
+        delete($ex);
+        delete($ee);
+        insert(new En($e, $o));
+        insert(new Libera($x, $e));
+        insert(new Suceso($x + " libera a " + $e + " y huyen del inframundo hacia " + $o
+            + " debido a tener la capacidad Navegar y a estar " + $e + " libre y viva"));
+end
+
+
