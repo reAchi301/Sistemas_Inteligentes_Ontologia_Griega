@@ -214,23 +214,23 @@
 ;+		(allowed-classes Dios Mortal)
 		(create-accessor read-write)))
 
-(defclass Dios "Instancias: Zeus, Atenea, Hermes, Hades, Hefesto, Poseidon."
+(defclass Dios "Instancias: Zeus, Atenea, Hermes, Hades, Hefesto, Poseidon, Persefone."
 	(is-a Personaje)
 	(role concrete))
 
-(defclass SerDivino "Dioses menores. Instancias: Grayas, Ninfas, Nereidas, Doris."
+(defclass SerDivino "Dioses menores. Instancias: Grayas, Ninfas, Nereidas, Doris, Caronte."
 	(is-a Personaje)
 	(role concrete))
 
-(defclass Heroe "Personajes controlados o principales. Instancias: Perseo, Teseo, Heracles."
+(defclass Heroe "Personajes controlados o principales. Instancias: Perseo, Teseo, Heracles, Orfeo."
 	(is-a Personaje)
 	(role concrete))
 
-(defclass Mortal "Instancias: Andromeda, Casiopea, Cefeo, Minos, Ariadna, Dedalo, Icaro, Pasifae."
+(defclass Mortal "Instancias: Andromeda, Casiopea, Cefeo, Minos, Ariadna, Dedalo, Icaro, Pasifae, Euridice, Aristeo."
 	(is-a Personaje)
 	(role concrete))
 
-(defclass Criatura "Enemigos o monstruos. Instancias: Ceto, Kraken, Medusa, Minotauro, Pegaso, ToroBlanco, ToroMinos, ToroMar."
+(defclass Criatura "Enemigos o monstruos. Instancias: Ceto, Kraken, Medusa, Minotauro, Pegaso, ToroBlanco, ToroMinos, ToroMar, SerpienteDosCabezas, Cerbero."
 	(is-a Personaje)
 	(role concrete))
 
@@ -261,7 +261,7 @@
 	(is-a Objeto)
 	(role concrete))
 
-(defclass Magico "Instancias: CascoHades, SandaliasAladas, ZurronMagico, HiloAriadna, BridaOro, AnilloInvisibilidad, ConjuroVuelo, AlasDedalo, AlasIcaro, EspejoMano, DisfrazVaca."
+(defclass Magico "Instancias: CascoHades, SandaliasAladas, ZurronMagico, HiloAriadna, BridaOro, AnilloInvisibilidad, ConjuroVuelo, AlasDedalo, AlasIcaro, EspejoMano, DisfrazVaca, LiraApolo, BarcoDeLosMuertos."
 	(is-a Objeto)
 	(role concrete)
 	(multislot otorgaCapacidad
@@ -271,11 +271,11 @@
 		(cardinality 1 ?VARIABLE)
 		(create-accessor read-write)))
 
-(defclass Trofeo "Restos obtenidos tras matar a una criatura (CabezaMedusa, CabezaCeto, CabezaMinotauro, OjoGrayas)."
+(defclass Trofeo "Restos obtenidos tras matar a una criatura (CabezaMedusa, CabezaCeto, CabezaMinotauro, OjoGrayas, CorazonHades, CabezaSerpiente)."
 	(is-a Objeto)
 	(role concrete))
 
-(defclass Lugar "Agrupa ubicaciones (Creta, LaberintoCreta, CostaEtiopia, Olimpo)."
+(defclass Lugar "Agrupa ubicaciones (Creta, LaberintoCreta, CostaEtiopia, Olimpo, BosqueTracia, Prado, RioEstiga, ReinoSombras)."
 	(is-a USER)
 	(role concrete)
 	(multislot contieneA

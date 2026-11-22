@@ -30,11 +30,30 @@
 	(estadoVivo TRUE)
 	(poseeObjeto [HiloAriadna]))
 
+([Aristeo] of  Mortal
+
+	(estadoLibre TRUE)
+	(estadoVivo TRUE)
+	(ubicadoEn [BosqueTracia]))
+
 ([Atenea] of  Dios
 
 	(estadoLibre TRUE)
 	(estadoVivo TRUE)
 	(poseeObjeto [EscudoBronce]))
+
+([BarcoDeLosMuertos] of  Magico
+
+	(otorgaCapacidad
+		[Navegar]
+		[ContieneMagia])
+	(poseidoPor [Caronte]))
+
+([BosqueTracia] of  Lugar
+
+	(contieneA
+		[Euridice]
+		[Aristeo]))
 
 ([BridaOro] of  Magico
 
@@ -54,6 +73,17 @@
 
 	(poseidoPor [Minotauro]))
 
+([CabezaSerpiente] of  Trofeo
+
+	(poseidoPor [SerpienteDosCabezas]))
+
+([Caronte] of  SerDivino
+
+	(estadoLibre TRUE)
+	(estadoVivo TRUE)
+	(poseeObjeto [BarcoDeLosMuertos])
+	(ubicadoEn [RioEstiga]))
+
 ([CascoHades] of  Magico
 
 	(otorgaCapacidad [Invisibilidad])
@@ -72,6 +102,12 @@
 ([CeraAbejas] of  Objeto
 )
 
+([Cerbero] of  Criatura
+
+	(estadoLibre TRUE)
+	(estadoVivo TRUE)
+	(ubicadoEn [ReinoSombras]))
+
 ([Ceto] of  Criatura
 
 	(ayudaA [Poseidon])
@@ -87,6 +123,10 @@
 
 ([ContieneMagia] of  Capacidad
 )
+
+([CorazonHades] of  Trofeo
+
+	(poseidoPor [Hades]))
 
 ([CostaEtiopia] of  Lugar
 
@@ -153,6 +193,15 @@
 
 	(otorgaCapacidad [Espejo]))
 
+([Euridice] of  Mortal
+
+	(estadoLibre TRUE)
+	(estadoVivo TRUE)
+	(ubicadoEn [BosqueTracia]))
+
+([FuerzaSemiDios] of  Capacidad
+)
+
 ([Grayas] of  SerDivino
 
 	(estadoLibre TRUE)
@@ -163,7 +212,10 @@
 
 	(estadoLibre TRUE)
 	(estadoVivo TRUE)
-	(poseeObjeto [CascoHades]))
+	(poseeObjeto
+		[CascoHades]
+		[CorazonHades])
+	(ubicadoEn [ReinoSombras]))
 
 ([Hefesto] of  Dios
 
@@ -177,7 +229,9 @@
 
 	(estadoLibre TRUE)
 	(estadoVivo TRUE)
-	(hijoDe [Zeus]))
+	(hijoDe [Zeus])
+	(tieneCapacidad [FuerzaSemiDios])
+	(tieneFavor [Zeus]))
 
 ([Hermes] of  Dios
 
@@ -213,6 +267,13 @@
 ([LaberintoCreta] of  Lugar
 
 	(contieneA [Minotauro]))
+
+([LiraApolo] of  Magico
+
+	(otorgaCapacidad
+		[Musical]
+		[Domar])
+	(poseidoPor [Orfeo]))
 
 ([MatarMinotauro] of  Accion
 
@@ -269,6 +330,12 @@
 	(%3APAL-RANGE "(defrange ?a :FRAME Accion)\n(defrange ?p :FRAME Personaje)\n(defrange ?o :FRAME Objeto)")
 	(%3APAL-STATEMENT "(forall ?a (forall ?p (forall ?o\n                              (=> (and (realizadaPor ?a ?p) (usaObjeto ?a ?o))\n                                  (poseeObjeto ?p ?o)))))"))
 
+([Musical] of  Capacidad
+)
+
+([Navegar] of  Capacidad
+)
+
 ([Nereidas] of  SerDivino
 
 	(estadoLibre TRUE)
@@ -289,6 +356,12 @@
 ([Olimpo] of  Lugar
 )
 
+([Orfeo] of  Heroe
+
+	(estadoLibre TRUE)
+	(estadoVivo TRUE)
+	(poseeObjeto [LiraApolo]))
+
 ([Orientacion] of  Capacidad
 )
 
@@ -304,6 +377,12 @@
 
 	(estadoLibre TRUE)
 	(estadoVivo TRUE))
+
+([Persefone] of  Dios
+
+	(estadoLibre TRUE)
+	(estadoVivo TRUE)
+	(ubicadoEn [ReinoSombras]))
 
 ([Perseo] of  Heroe
 
@@ -324,10 +403,30 @@
 	(tieneAyuda [Ceto])
 	(tienePreso [Ceto]))
 
+([Prado] of  Lugar
+)
+
+([ReinoSombras] of  Lugar
+
+	(contieneA
+		[Cerbero]
+		[Persefone]
+		[Hades]))
+
+([RioEstiga] of  Lugar
+
+	(contieneA [Caronte]))
+
 ([SandaliasAladas] of  Magico
 
 	(otorgaCapacidad [Vuelo])
 	(poseidoPor [Ninfas]))
+
+([SerpienteDosCabezas] of  Criatura
+
+	(estadoLibre TRUE)
+	(estadoVivo TRUE)
+	(poseeObjeto [CabezaSerpiente]))
 
 ([Teseo] of  Heroe
 
